@@ -71,7 +71,7 @@ class WeightBridgeLine(models.Model):
         for line in self:
             if line.weight_after > line.weight_before:
                 line['weight_total'] = line.weight_after - line.weight_before
-            else if line.weight_after < line.weight_before:
+            elif line.weight_after < line.weight_before:
                 line['weight_total'] = line.weight_before - line.weight_after
                 
                 
