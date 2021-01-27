@@ -29,9 +29,8 @@
                             <field name="car_number"/>
                         </group>
                         <group>
-                            <field name="permission_number" attrs="{'invisible': [('state','=','purchase')]}"/>
-                            <field name="date_weight" attrs="{'invisible': [('state','!=','purchase')]}"/>
-                            <field name="origin" attrs="{'invisible': [('origin','=',False)]}"/>
+                            <field name="permission_number"/>
+                            <field name="date_weight"/>
                             <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
                         </group>
                     </group>
