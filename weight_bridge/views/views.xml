@@ -41,6 +41,8 @@
                                 mode="tree"
                                 attrs="{'readonly': [('state', '=', 'done')]}">
                                 <tree string="Weight Lines" editable="bottom">
+                                    <field name="state" invisible="1"/>
+
 <!--                                     <control>
                                         <create name="add_product_control" string="Add a product"/>
                                         <create name="add_section_control" string="Add a section" context="{'default_display_type': 'line_section'}"/>
@@ -51,7 +53,6 @@
                                     <field name="weight_before"/>
                                     <field name="weight_after"/>
                                     <field name="weight_total"/>
-                                    <field name="state" invisible="1"/>
                                 </tree>
                             </field>
                           </page>
