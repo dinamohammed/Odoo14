@@ -1,0 +1,120 @@
+<odoo>
+  <data>
+      <record id="purchase_order_form" model="ir.ui.view">
+          <field name="name">purchase.order.form</field>
+          <field name="model">purchase.order</field>
+          <field name="arch" type="xml">
+              <form string="Purchase Order">
+                  <header>
+                  </header>
+                  <sheet>
+<!--                     <div class="oe_button_box" name="button_box">
+                        <button type="object"  name="action_view_invoice"
+                            class="oe_stat_button"
+                            icon="fa-pencil-square-o" attrs="{'invisible':['|', ('invoice_count', '=', 0), ('state', 'in', ('draft','sent','to approve'))]}">
+                            <field name="invoice_count" widget="statinfo" string="Vendor Bills"/>
+                            <field name='invoice_ids' invisible="1"/>
+                        </button>
+                    </div> -->
+                    <div class="oe_title">
+                        <span class="o_form_label">Weights</span>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="driver_name" widget="res_partner_many2one"/>
+                            <field name="mobile_number"/>
+                            <field name="car_number"/>
+                        </group>
+                        <group>
+                            <field name="permission_number" attrs="{'invisible': [('state','=','purchase')]}"/>
+                            <field name="date_weight" attrs="{'invisible': [('state','!=','purchase')]}"/>
+                            <field name="origin" attrs="{'invisible': [('origin','=',False)]}"/>
+                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                      <notebook>
+                        <page string="Products">
+                            <field name="weightbridge_line"
+                                widget="section_and_note_one2many"
+                                mode="tree"
+                                attrs="{'readonly': [('state', '=', 'done')]}">
+                                <tree string="Weight Lines" editable="bottom">
+<!--                                     <control>
+                                        <create name="add_product_control" string="Add a product"/>
+                                        <create name="add_section_control" string="Add a section" context="{'default_display_type': 'line_section'}"/>
+                                        <create name="add_note_control" string="Add a note" context="{'default_display_type': 'line_note'}"/>
+                                    </control> -->
+                                    <field name="product_id"/>
+                                    <field name="name"/>
+                                    <field name="weight_before"/>
+                                    <field name="weight_after"/>
+                                    <field name="weight_total"/>
+                                </tree>
+                            </field>
+                          </page>
+                      </notebook>
+                  </sheet>
+                  <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+              </form>
+          </field>
+      </record>
+      
+    <!-- explicit list view definition -->
+      <record id="weightbridge_tree" model="ir.ui.view">
+          <field name="name">pweight.bridge.tree</field>
+          <field name="model">weight.bridge</field>
+          <field name="arch" type="xml">
+              <tree string="Purchase Order" multi_edit="1">
+                    <field name="driver_name"/>
+                    <field name="mobile_number"/>
+                    <field name="name" string="Reference" readonly="1"/>
+                    <field name="car_number"/>
+                    <field name="permission_number"/>
+                    <field name="date_weight"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+      <record id="weights_action" model="ir.actions.act_window">
+          <field name="name">Weights</field>
+          <field name="type">ir.actions.act_window</field>
+          <field name="res_model">weight.bridge</field>
+          <field name="view_mode">tree,form,pivot</field>
+          <field name="view_id" ref="weightbridge_tree"/>
+          <field name="domain">[]</field>
+<!--           <field name="search_view_id" ref="view_purchase_order_filter"/> -->
+          <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create Weights Record
+              </p><p>
+                The Weight contains the weights of the trucks before and after
+              </p>
+          </field>
+        </record>
+
+    <!-- Top menu item -->
+    <menuitem name="WeightBridge"
+            id="menu_weight_bridge_root"
+            web_icon="weightbridge,static/description/icon.png"
+            sequence="28"/>
+      <!--             groups="group_purchase_manager,group_purchase_user"
+-->
+    <!-- menu categories -->
+
+    <menuitem name="Weights" id="weight_bridge.weights" parent="menu_weight_bridge_root" sequence="1"/>
+    <menuitem name="Configuration" id="weight_bridge.configuration" parent="menu_weight_bridge_root" sequence="2"/>
+    <menuitem name="Weights" id="weight_bridge.weights2" parent="weight_bridge.weights" action="weights_action"
+              sequence="15"/>
+    <menuitem name="APIs" id="weight_bridge.configuration.api" parent="weight_bridge.configuration"
+              action="weight_api_action" sequence="16"/>
+
+
+  </data>
+</odoo>
