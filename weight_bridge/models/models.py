@@ -22,7 +22,7 @@ class WeightBridge(models.Model):
         ('done', 'Done'),
     ], string='Status', readonly=True, index=True, copy=False, default='draft', tracking=True)
     
-    order_line = fields.One2many('weight.bridge.line', 'order_id', string='Weight Lines', states={ 'done': [('readonly', True)]}, copy=True)
+    order_line = fields.One2many('weight.bridge.line', 'order_id', string='Weight Lines', copy=True)
     company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company.id)
 
 
@@ -64,6 +64,8 @@ class WeightBridgeLine(models.Model):
     state = fields.Selection(related='order_id.state', store=True, readonly=False)
     date_weight_line = fields.Datetime('Date per Line')
     driver_id = fields.Many2one('res.partner', related='order_id.driver_name', string='Partner', readonly=True, store=True)
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company.id)
+
 
     
     @api.onchange('weight_before','weight_after')

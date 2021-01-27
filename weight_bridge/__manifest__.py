@@ -23,6 +23,7 @@
 
     # always loaded
     'data': [
+        'security/weightbridge.xml',
         'security/ir.model.access.csv',
         'views/views.xml',
         'data/sequence.xml',

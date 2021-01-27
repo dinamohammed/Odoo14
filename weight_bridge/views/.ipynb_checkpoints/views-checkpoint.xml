@@ -66,17 +66,17 @@
       
     <!-- explicit list view definition -->
       <record id="weightbridge_tree" model="ir.ui.view">
-          <field name="name">pweight.bridge.tree</field>
+          <field name="name">weight.bridge.tree</field>
           <field name="model">weight.bridge</field>
           <field name="arch" type="xml">
-              <tree string="Purchase Order" multi_edit="1">
+              <tree string="WeightBridge" multi_edit="1">
                     <field name="driver_name"/>
                     <field name="mobile_number"/>
                     <field name="name" string="Reference" readonly="1"/>
                     <field name="car_number"/>
                     <field name="permission_number"/>
                     <field name="date_weight"/>
-                    <field name="state"/>
+<!--                     <field name="state"/> -->
                 </tree>
             </field>
         </record>
@@ -100,7 +100,8 @@
     <!-- Top menu item -->
     <menuitem name="WeightBridge"
             id="menu_weight_bridge_root"
-            web_icon="weightbridge,static/description/icon.png"
+            groups="group_weight_bridge_user,group_weight_bridge_manager"
+            web_icon="weight_bridge,static/description/icon.png"
             sequence="28"/>
       <!--             groups="group_purchase_manager,group_purchase_user"
 -->
