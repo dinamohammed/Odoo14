@@ -51,6 +51,7 @@
                                     <field name="weight_before"/>
                                     <field name="weight_after"/>
                                     <field name="weight_total"/>
+                                    <field name="state" invisible="1"/>
                                 </tree>
                             </field>
                           </page>
