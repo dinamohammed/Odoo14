@@ -38,11 +38,8 @@
                         <page string="Products">
                             <field name="order_line"
                                 widget="section_and_note_one2many"
-                                mode="tree"
-                                attrs="{'readonly': [('state', '=', 'done')]}">
+                                mode="tree">
                                 <tree string="Weight Lines" editable="bottom">
-                                    <field name="state" invisible="1"/>
-
 <!--                                     <control>
                                         <create name="add_product_control" string="Add a product"/>
                                         <create name="add_section_control" string="Add a section" context="{'default_display_type': 'line_section'}"/>
