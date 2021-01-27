@@ -110,9 +110,9 @@
     <menuitem name="Configuration" id="weight_bridge.configuration" parent="menu_weight_bridge_root" sequence="2"/>
     <menuitem name="Weights" id="weight_bridge.weights2" parent="weight_bridge.weights" action="weights_action"
               sequence="15"/>
-    <menuitem name="APIs" id="weight_bridge.configuration.api" parent="weight_bridge.configuration"
+<!--     <menuitem name="APIs" id="weight_bridge.configuration.api" parent="weight_bridge.configuration"
               action="weight_api_action" sequence="16"/>
-
+ -->
 
   </data>
 </odoo>
