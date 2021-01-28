@@ -4,8 +4,14 @@
           <field name="name">weight.bridge.form</field>
           <field name="model">weight.bridge</field>
           <field name="arch" type="xml">
-              <form string="Purchase Order">
+              <form string="Weights">
                   <header>
+                      <button name="button_confirm" type="object" states="draft" string="Confirm" 
+                              class="oe_highlight" id="bid_confirm"/>
+                      <button name="button_draft" states="done" string="Set to Draft" type="object" />
+
+                      <field name="state" widget="statusbar" statusbar_visible="draft,done" readonly="1"/>
+
                   </header>
                   <sheet>
 <!--                     <div class="oe_button_box" name="button_box">
@@ -27,6 +33,7 @@
                             <field name="driver_name" widget="res_partner_many2one"/>
                             <field name="mobile_number"/>
                             <field name="car_number"/>
+                            <field name="reference"/>
                         </group>
                         <group>
                             <field name="permission_number"/>

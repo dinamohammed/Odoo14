@@ -2,6 +2,8 @@
 
 from odoo import models, fields, api, _
 from datetime import datetime
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+
 
 
 class WeightBridge(models.Model):
@@ -14,6 +16,7 @@ class WeightBridge(models.Model):
     driver_name = fields.Many2one('res.partner', string='Driver')
     mobile_number = fields.Char('Mobile Number', compute='get_mobile_number')
     car_number = fields.Char('Car Number')
+    reference = fields.Char('PO/SO No.')
     permission_number = fields.Char('Permission Number')
     date_weight = fields.Datetime('Date',readonly = True)
     name = fields.Char('Order Reference', required=True, index=True, copy=False, default='New')
@@ -35,6 +38,7 @@ class WeightBridge(models.Model):
     def create(self, vals):
         if vals.get('name', 'New') == 'New':
             seq_date = None
+            vals['date_weight'] = fields.Datetime.now()
             if 'date_weight' in vals:
                 seq_date = fields.Datetime.context_timestamp(self, fields.Datetime.to_datetime(vals['date_weight']))
             vals['name'] = self.env['ir.sequence'].next_by_code('weight.bridge', sequence_date=seq_date) or '/'
@@ -45,7 +49,16 @@ class WeightBridge(models.Model):
     def get_mobile_number(self):
         for line in self:
             line['mobile_number'] = line.driver_name.mobile
-            
+    
+    
+    def button_confirm(self):
+        for order in self:
+            order.write({'state': 'done'})
+        return True
+    
+    def button_draft(self):
+        self.write({'state': 'draft'})
+        return {}
             
 
 class WeightBridgeLine(models.Model):
@@ -71,10 +84,11 @@ class WeightBridgeLine(models.Model):
     @api.onchange('weight_before','weight_after')
     def get_total_weight(self):
         for line in self:
-            if line.weight_after > line.weight_before:
-                line['weight_total'] = line.weight_after - line.weight_before
-            elif line.weight_after < line.weight_before:
-                line['weight_total'] = line.weight_before - line.weight_after
+            if line.weight_after or line.weight_before:
+                if line.weight_after > line.weight_before:
+                    line['weight_total'] = line.weight_after - line.weight_before
+                elif line.weight_after < line.weight_before:
+                    line['weight_total'] = line.weight_before - line.weight_after
                 
                 
     def _get_product_purchase_description(self, product_lang):
