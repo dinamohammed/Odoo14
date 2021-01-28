@@ -15,7 +15,7 @@ class WeightBridge(models.Model):
     mobile_number = fields.Char('Mobile Number', compute='get_mobile_number')
     car_number = fields.Char('Car Number')
     permission_number = fields.Char('Permission Number')
-    date_weight = fields.Datetime('Date')
+    date_weight = fields.Datetime('Date',readonly = True)
     name = fields.Char('Order Reference', required=True, index=True, copy=False, default='New')
     state = fields.Selection([
         ('draft', 'Draft'),
