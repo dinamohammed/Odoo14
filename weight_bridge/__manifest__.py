@@ -25,8 +25,9 @@
     'data': [
         'security/weightbridge.xml',
         'security/ir.model.access.csv',
-        'views/views.xml',
+        'views/views.xml', 
         'data/sequence.xml',
+        'wizard/weight_bridge_line_create_view.xml',
     ],
     'installable': True,
     'auto_install': False,

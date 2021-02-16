@@ -54,9 +54,12 @@
                                     </control> -->
                                     <field name="product_id"/>
                                     <field name="name"/>
+                                    <field name="time_spent" widget="float_time"/>
                                     <field name="weight_before"/>
                                     <field name="weight_after"/>
                                     <field name="weight_total"/>
+                                    <field name = "sale_order_id" attrs="{'invisible': [ ('sale_order_id', '=', False)]}"/>
+                                    <field name = "purchase_order_id" attrs="{'invisible': [ ('purchase_order_id', '=', False)]}"/>
                                 </tree>
                             </field>
                           </page>
@@ -76,17 +79,22 @@
           <field name="name">weight.bridge.tree</field>
           <field name="model">weight.bridge</field>
           <field name="arch" type="xml">
-              <tree string="WeightBridge" multi_edit="1">
-                    <field name="driver_name"/>
-                    <field name="mobile_number"/>
-                    <field name="name" string="Reference" readonly="1"/>
-                    <field name="car_number"/>
-                    <field name="permission_number"/>
-                    <field name="date_weight"/>
+              <tree string="WeightBridge">
+<!--                   <button class="btn-primary" name="action_timer_start" type="object" string="Start"/>
+                  <button class="btn-primary btn-danger o_fsm_stop" name="action_timer_stop" type="object" string="Stop"/>
+                  <button class="btn-primary" name="action_timer_pause" type="object" string="Pause"/>
+                  <button class="btn-primary btn-info" name="action_timer_resume" type="object" string="Resume"/> -->
+                  <field name="driver_name"/>
+                  <field name="mobile_number"/>
+                  <field name="name" string="Reference" readonly="1"/>
+                  <field name="car_number"/>
+                  <field name="permission_number"/>
+                  <field name="date_weight"/>
 <!--                     <field name="state"/> -->
                 </tree>
             </field>
         </record>
+      
       <record id="weights_action" model="ir.actions.act_window">
           <field name="name">Weights</field>
           <field name="type">ir.actions.act_window</field>
@@ -103,6 +111,57 @@
               </p>
           </field>
         </record>
+      
+      
+      <record id="weightbridge_form2" model="ir.ui.view">
+          <field name="name">weight.bridge.line.form</field>
+          <field name="model">weight.bridge.line</field>
+          <field name="arch" type="xml">
+              <form string="Weights Screen">
+                  <header>
+                      <field name="weight_timer_start" invisible="1"/>
+                      <field name="time_spent" invisible="1"/>
+                      <field name="weight_timer_start" invisible="1"/>
+                      <field name="weight_timer_pause" invisible="1"/>
+                      <button class="btn-primary" name="action_timer_start" type="object" string="Start"
+                              attrs="{'invisible': ['|', ('time_spent', '!=', 0),
+                                     ('weight_timer_start', '!=', False)]}"/>
+                      <button class="btn-secondary" name="action_timer_start" type="object" string="Start"
+                    attrs="{'invisible': ['|', ('time_spent', '=', 0), ('weight_timer_start', '!=', False)]}"/>
+                      <button class="btn-primary btn-danger o_fsm_stop" name="action_timer_stop" type="object" string="Stop"
+                              attrs="{'invisible': [ ('weight_timer_start', '=', False)]}"/>
+                      <button class="btn-primary" name="action_timer_pause" type="object" string="Pause"
+                              attrs="{'invisible': ['|', ('weight_timer_pause', '!=', False),
+                                     ('weight_timer_start', '=', False)]}"/>
+                      <button class="btn-primary btn-info" name="action_timer_resume" type="object" string="Resume"
+                              attrs="{'invisible': ['|',('weight_timer_pause', '=', False),
+                                     ('weight_timer_start', '=', False)]}"/>
+                  </header>
+                  <sheet>
+                      <group>
+                          <group name="weights" string="Add Weights">
+                              <field name = "weight_before"/>
+                              <field name = "weight_after"/>
+                          </group>
+                          <group name="reference" string="Add Reference">
+                              <field name = "sale_order_id"/>
+                              <field name = "purchase_order_id"/>
+                          </group>
+                      </group>
+                  </sheet>
+                </form>
+            </field>
+        </record>
+
+      
+      <record id="weights_action2" model="ir.actions.act_window">
+          <field name="name">Weights Strat Stop</field>
+          <field name="type">ir.actions.act_window</field>
+          <field name="res_model">weight.bridge.line</field>
+          <field name="view_mode">form</field>
+          <field name="view_id" ref="weightbridge_form2"/>
+          <field name="domain">[]</field>
+        </record>
 
     <!-- Top menu item -->
     <menuitem name="WeightBridge"
@@ -116,8 +175,8 @@
 
     <menuitem name="Weights" id="weight_bridge.weights" parent="menu_weight_bridge_root" sequence="1"/>
     <menuitem name="Configuration" id="weight_bridge.configuration" parent="menu_weight_bridge_root" sequence="2"/>
-    <menuitem name="Weights" id="weight_bridge.weights2" parent="weight_bridge.weights" action="weights_action"
-              sequence="15"/>
+    <menuitem name="Weights" id="weight_bridge.weights2" parent="weight_bridge.weights" action="weights_action" sequence="15"/>
+    <menuitem name="Weights Start" id="weight_bridge.weights3" parent="weight_bridge.weights" action="weights_action2" sequence="17"/>
 <!--     <menuitem name="APIs" id="weight_bridge.configuration.api" parent="weight_bridge.configuration"
               action="weight_api_action" sequence="16"/>
  -->

@@ -27,9 +27,8 @@ class WeightBridge(models.Model):
     
     order_line = fields.One2many('weight.bridge.line', 'order_id', string='Weight Lines', copy=True)
     company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company.id)
-
-
     
+
     READONLY_STATES = {
         'done': [('readonly', True)],
     }
@@ -59,6 +58,8 @@ class WeightBridge(models.Model):
     def button_draft(self):
         self.write({'state': 'draft'})
         return {}
+    
+
             
 
 class WeightBridgeLine(models.Model):
@@ -67,17 +68,21 @@ class WeightBridgeLine(models.Model):
     _order = 'order_id, id'
     
     
-    name = fields.Text(string='Description', required=True , compute='get_product_name')
+    name = fields.Text(string='Description')
+    # , compute='get_product_name'
     product_id = fields.Many2one('product.product', string='Product', change_default=True)
     #domain=[('purchase_ok', '=', True)],
     weight_before = fields.Float('Weight Before')
     weight_after = fields.Float('Weight After')
-    weight_total = fields.Float('Weight Total',compute='get_total_weight')
-    order_id = fields.Many2one('weight.bridge', string='Weight Reference', index=True, required=True, ondelete='cascade')
+    weight_total = fields.Float('Weight Total')
+    order_id = fields.Many2one('weight.bridge', string='Weight Reference')
     state = fields.Selection(related='order_id.state', store=True, readonly=False)
     date_weight_line = fields.Datetime('Date per Line')
     driver_id = fields.Many2one('res.partner', related='order_id.driver_name', string='Partner', readonly=True, store=True)
     company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company.id)
+    time_spent = fields.Float('Time', precision_digits=2)
+    sale_order_id = fields.Many2one('sale.order', string='Sale Order Ref')
+    purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order Ref')
 
 
     
@@ -109,6 +114,86 @@ class WeightBridgeLine(models.Model):
         )
         self.name = self._get_product_purchase_description(product_lang)
     
+    
+        # fields regarding timer 
+    
+    weight_timer_start = fields.Datetime("Weight Timer Start", default=None)
+    weight_timer_pause = fields.Datetime("Weight Timer Last Pause")
+    weight_timer_first_start = fields.Datetime("Weight Timer First Use", readonly=True)
+    weight_timer_last_stop = fields.Datetime("Weight Timer Last Use", readonly=True)
+
+    
+    def action_timer_start(self):
+        self.ensure_one()
+        if not self.weight_timer_first_start:
+            self.write({'weight_timer_first_start': fields.Datetime.now()})
+            self.write({'weight_before': self.weight_before})
+        return self.write({'weight_timer_start': fields.Datetime.now(),
+                          'weight_before': self.weight_before})
+
+    def action_timer_pause(self):
+        self.write({'weight_timer_pause': fields.Datetime.now()})
+    
+    def action_timer_resume(self):
+        new_start = self.weight_timer_start + (fields.Datetime.now() - self.weight_timer_pause)
+        self.write({
+            'weight_timer_start': new_start,
+            'weight_timer_pause': False
+        })
+
+    def action_timer_stop(self):
+        self.ensure_one()
+        start_time = self.weight_timer_start
+        if start_time:  # timer was either running or paused
+            pause_time = self.weight_timer_pause
+            if pause_time:
+                start_time = start_time + (fields.Datetime.now() - pause_time)
+            minutes_spent = (fields.Datetime.now() - start_time).total_seconds() / 60
+#             minutes_spent = self._timer_rounding(minutes_spent)
+            end_weight = 0.0
+            difference = 0.0
+            if self.weight_after :
+                end_weight = self.weight_after
+            if end_weight > self.weight_before:
+                difference = end_weight - self.weight_before
+            elif end_weight < self.weight_before:
+                difference = self.weight_before - end_weight
+            start_weight = self.weight_before
+            sale_reference = 0
+            purchase_reference = 0
+            if self.sale_order_id :
+                sale_reference = self.sale_order_id.id
+            elif self.purchase_order_id: 
+                purchase_reference = self.purchase_order_id.id
+            else:
+                sale_reference = False
+                purchase_reference = False
+                
+            return self._action_create_weigth(minutes_spent * 60 / 3600 ,difference, start_weight, end_weight, sale_reference, 
+                                              purchase_reference)
+        return False
+    
+    def _action_create_weigth(self, time_spent, difference, start_weight, end_weight, sale_reference, purchase_reference):
+        return {
+            "name": _("Confirm Time and Weight"),
+            "type": 'ir.actions.act_window',
+            "res_model": 'weight.bridge.create.line',
+            "views": [[False, "form"]],
+            "target": 'new',
+            "context": {
+                **self.env.context,
+                'active_id': self.id,
+                'active_model': 'weight.bridge.line',
+                'default_time_spent': time_spent,
+                'default_difference': difference,
+                'default_start_weight': start_weight,
+                'default_end_weight': end_weight,
+                'default_sale_reference': sale_reference,
+                'default_purchase_reference': purchase_reference,
+            },
+        }
+
+
     
 
     
