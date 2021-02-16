@@ -136,6 +136,9 @@
                       <button class="btn-primary btn-info" name="action_timer_resume" type="object" string="Resume"
                               attrs="{'invisible': ['|',('weight_timer_pause', '=', False),
                                      ('weight_timer_start', '=', False)]}"/>
+                      <field name="weight_timer_start" widget="timesheet_timer" 
+                             class="text-danger ml-auto h2 ml-4 font-weight-bold"/>
+
                   </header>
                   <sheet>
                       <group>
