@@ -127,9 +127,8 @@ class WeightBridgeLine(models.Model):
         self.ensure_one()
         if not self.weight_timer_first_start:
             self.write({'weight_timer_first_start': fields.Datetime.now()})
-            self.write({'weight_before': self.weight_before})
-        return self.write({'weight_timer_start': fields.Datetime.now(),
-                          'weight_before': self.weight_before})
+        self.write({'weight_timer_start': fields.Datetime.now()})
+        return self._action_create_weigth2()
 
     def action_timer_pause(self):
         self.write({'weight_timer_pause': fields.Datetime.now()})
@@ -149,31 +148,10 @@ class WeightBridgeLine(models.Model):
             if pause_time:
                 start_time = start_time + (fields.Datetime.now() - pause_time)
             minutes_spent = (fields.Datetime.now() - start_time).total_seconds() / 60
-#             minutes_spent = self._timer_rounding(minutes_spent)
-            end_weight = 0.0
-            difference = 0.0
-            if self.weight_after :
-                end_weight = self.weight_after
-            if end_weight > self.weight_before:
-                difference = end_weight - self.weight_before
-            elif end_weight < self.weight_before:
-                difference = self.weight_before - end_weight
-            start_weight = self.weight_before
-            sale_reference = 0
-            purchase_reference = 0
-            if self.sale_order_id :
-                sale_reference = self.sale_order_id.id
-            elif self.purchase_order_id: 
-                purchase_reference = self.purchase_order_id.id
-            else:
-                sale_reference = False
-                purchase_reference = False
-                
-            return self._action_create_weigth(minutes_spent * 60 / 3600 ,difference, start_weight, end_weight, sale_reference, 
-                                              purchase_reference)
+            return self._action_create_weigth(minutes_spent * 60 / 3600)
         return False
     
-    def _action_create_weigth(self, time_spent, difference, start_weight, end_weight, sale_reference, purchase_reference):
+    def _action_create_weigth(self, time_spent):
         return {
             "name": _("Confirm Time and Weight"),
             "type": 'ir.actions.act_window',
@@ -185,11 +163,21 @@ class WeightBridgeLine(models.Model):
                 'active_id': self.id,
                 'active_model': 'weight.bridge.line',
                 'default_time_spent': time_spent,
-                'default_difference': difference,
-                'default_start_weight': start_weight,
-                'default_end_weight': end_weight,
-                'default_sale_reference': sale_reference,
-                'default_purchase_reference': purchase_reference,
+            },
+        }
+    
+    
+    def _action_create_weigth2(self):
+        return {
+            "name": _("Start Recording"),
+            "type": 'ir.actions.act_window',
+            "res_model": 'weight.bridge.create.line2',
+            "views": [[False, "form"]],
+            "target": 'new',
+            "context": {
+                **self.env.context,
+                'active_id': self.id,
+                'active_model': 'weight.bridge.line',
             },
         }
 

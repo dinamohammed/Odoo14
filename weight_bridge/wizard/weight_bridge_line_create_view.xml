@@ -9,18 +9,21 @@
                 <group>
                     <group>
                         <field name="order_id"/>
-                        <field name="product_id"/>
-                        <field name="driver_id"/>
                         <label for="time_spent"/>
                         <div class="o_row" >
                             <field name="time_spent" widget="float_time" required="True"/>
                             hours
                         </div>
-                        <label for="difference"/>
+                        <label for="end_weight"/>
                         <div class="o_row" >
-                            <field name="difference" required="True"/>
+                            <field name="end_weight" required="True"/>
                             Kilograms
                         </div>
+<!--                         <label for="difference"/>
+                        <div class="o_row" >
+                            <field name="difference" readonly="1"/>
+                            Kilograms
+                        </div> -->
                         <field name="description" widget="text" required="True"/>
                     </group>
                 </group>
@@ -31,5 +34,33 @@
             </form>
         </field>
     </record>
-
+    
+    <record id="weight_bridge_create_line_view_form2" model="ir.ui.view">
+        <field name="name">weight.bridge.create.line.wizard.form2</field>
+        <field name="model">weight.bridge.create.line2</field>
+        <field name="arch" type="xml">
+            <form string="Add Weight and Reference">
+                <group>
+                    <group string = "Add the Truck Data">
+                        <field name="order_id" required="True"/>
+                        <field name="product_id" required="True"/>
+                        <field name="driver_id"/>
+                        <label for="start_weight"/>
+                        <div class="o_row" >
+                            <field name="start_weight" required="True"/>
+                            Kilograms
+                        </div>
+                    </group>
+                    <group string = "References Either PO or SO">
+                        <field name="sale_reference"/>
+                        <field name="purchase_reference"/>
+                    </group>
+                </group>
+                <footer>
+                    <button string="Save" type="object" name="save_weights2" class="btn btn-primary"/>
+                    <button string="Cancel" special="cancel" type="object" class="btn btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
 </odoo>
