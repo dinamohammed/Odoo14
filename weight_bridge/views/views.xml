@@ -131,12 +131,12 @@ attrs="{'invisible': ['|', ('time_spent', '!=', 0),
 attrs="{'invisible': [ ('weight_timer_start', '=', False)]}"
 -->
                       <button class="btn-primary btn-danger o_fsm_stop" name="action_timer_stop" type="object" string="OUT"/>
-                      <button class="btn-primary" name="action_timer_pause" type="object" string="Pause"
+<!--                       <button class="btn-primary" name="action_timer_pause" type="object" string="Pause"
                               attrs="{'invisible': ['|', ('weight_timer_pause', '!=', False),
                                      ('weight_timer_start', '=', False)]}"/>
                       <button class="btn-primary btn-info" name="action_timer_resume" type="object" string="Resume"
                               attrs="{'invisible': ['|',('weight_timer_pause', '=', False),
-                                     ('weight_timer_start', '=', False)]}"/>
+                                     ('weight_timer_start', '=', False)]}"/> -->
                       <field name="weight_timer_start" widget="timesheet_timer" 
                              class="text-danger ml-auto h2 ml-4 font-weight-bold"/>
 

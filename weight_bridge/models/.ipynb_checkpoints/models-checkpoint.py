@@ -125,10 +125,12 @@ class WeightBridgeLine(models.Model):
     
     def action_timer_start(self):
         self.ensure_one()
+        start_time = fields.Datetime.now()
         if not self.weight_timer_first_start:
             self.write({'weight_timer_first_start': fields.Datetime.now()})
+            
         self.write({'weight_timer_start': fields.Datetime.now()})
-        return self._action_create_weigth2()
+        return self._action_create_weigth2(start_time)
 
     def action_timer_pause(self):
         self.write({'weight_timer_pause': fields.Datetime.now()})
@@ -141,17 +143,17 @@ class WeightBridgeLine(models.Model):
         })
 
     def action_timer_stop(self):
-        self.ensure_one()
-        start_time = self.weight_timer_start
-        if start_time:  # timer was either running or paused
-            pause_time = self.weight_timer_pause
-            if pause_time:
-                start_time = start_time + (fields.Datetime.now() - pause_time)
-            minutes_spent = (fields.Datetime.now() - start_time).total_seconds() / 60
-            return self._action_create_weigth(minutes_spent * 60 / 3600)
-        return False
+#         self.ensure_one()
+#         start_time = self.weight_timer_start
+        end_time = fields.Datetime.now()
+#         if start_time:  # timer was either running or paused
+#             pause_time = self.weight_timer_pause
+#             if pause_time:
+#                 start_time = start_time + (fields.Datetime.now() - pause_time)
+#             minutes_spent = (fields.Datetime.now() - start_time).total_seconds() / 60
+        return self._action_create_weigth(end_time)
     
-    def _action_create_weigth(self, time_spent):
+    def _action_create_weigth(self, end_time):
         return {
             "name": _("Confirm Time and Weight"),
             "type": 'ir.actions.act_window',
@@ -162,12 +164,12 @@ class WeightBridgeLine(models.Model):
                 **self.env.context,
                 'active_id': self.id,
                 'active_model': 'weight.bridge.line',
-                'default_time_spent': time_spent,
+                'default_end_time': end_time,
             },
         }
     
     
-    def _action_create_weigth2(self):
+    def _action_create_weigth2(self,start_time):
         return {
             "name": _("Start Recording"),
             "type": 'ir.actions.act_window',
@@ -178,6 +180,7 @@ class WeightBridgeLine(models.Model):
                 **self.env.context,
                 'active_id': self.id,
                 'active_model': 'weight.bridge.line',
+                'default_start_time': start_time,
             },
         }
 

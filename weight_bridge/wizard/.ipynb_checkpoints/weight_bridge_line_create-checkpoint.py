@@ -2,14 +2,14 @@
 
 from odoo import api, fields, models, _
 from datetime import datetime
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError , ValidationError
 
 
 class WeightBridgeCreateLine(models.TransientModel):
     _name = 'weight.bridge.create.line'
     _description = "Create Weights from timer"
 
-    _sql_constraints = [('time_positive', 'CHECK(time_spent > 0)', 'The time must be positive' )]
+#     _sql_constraints = [('time_positive', 'CHECK(time_spent > 0)', 'The time must be positive' )]
     
     time_spent = fields.Float('Time', precision_digits=2)
     description = fields.Char('Description')
@@ -20,6 +20,8 @@ class WeightBridgeCreateLine(models.TransientModel):
     end_weight = fields.Float('Weight After')
     sale_reference = fields.Many2one('sale.order', string='Sale Order Ref')
     purchase_reference = fields.Many2one('purchase.order', string='Purchase Order Ref')
+    
+    weight_timer_stop = fields.Datetime("Weight Timer Stop")
     
     
     def save_weights(self):
@@ -33,13 +35,17 @@ class WeightBridgeCreateLine(models.TransientModel):
             difference = end_weight - start_weight
         elif end_weight < start_weight:
             difference = start_weight - end_weight
+        start_time = line_id['weight_timer_start']
+#         raise ValidationError('%s'%start_time)
+        stop_time = self.weight_timer_stop
+        minutes_spent = (datetime.now() - start_time).total_seconds() / 60
         
         return line_id.write({
             'date_weight_line': datetime.now(),
             'name': self.description,
             'weight_total': difference,
             'weight_after': self.end_weight,
-            'time_spent': self.time_spent,
+            'time_spent': minutes_spent * 60 / 3600,
         })
     
     
@@ -54,6 +60,8 @@ class WeightBridgeCreateLine2(models.TransientModel):
     sale_reference = fields.Many2one('sale.order', string='Sale Order Ref')
     purchase_reference = fields.Many2one('purchase.order', string='Purchase Order Ref')
     
+    start_time = fields.Datetime("Weight Timer Start")
+    
     
     
     def save_weights2(self):
@@ -65,6 +73,7 @@ class WeightBridgeCreateLine2(models.TransientModel):
             'weight_before': self.start_weight,
             'sale_order_id': self.sale_reference.id,
             'purchase_order_id': self.purchase_reference.id,
+            'weight_timer_start':self.start_time,
         }
         self.order_id.write({
             'date_weight': fields.datetime.now(),
