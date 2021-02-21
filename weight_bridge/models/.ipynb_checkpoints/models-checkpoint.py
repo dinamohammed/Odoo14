@@ -6,48 +6,104 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 
 
-class WeightBridge(models.Model):
-    _name = 'weight.bridge'
-    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
-    _description = "WeightBridge"
+# class WeightBridge(models.Model):
+#     _name = 'weight.bridge'
+#     _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
+#     _description = "WeightBridge"
+#     _order = 'date_weight desc, id desc'
+    
+    
+# #     driver_name = fields.Many2one('res.partner', string='Driver')
+# #     mobile_number = fields.Char('Mobile Number', compute='get_mobile_number')
+# #     car_number = fields.Char('Car Number')
+#     reference = fields.Char('PO/SO No.')
+#     permission_number = fields.Char('Permission Number')
+#     date_weight = fields.Datetime('Date',readonly = True)
+# #     name = fields.Char('Order Reference', required=True, index=True, copy=False, default='New')
+#     state = fields.Selection([
+#         ('draft', 'Draft'),
+#         ('done', 'Done'),
+#     ], string='Status', readonly=True, index=True, copy=False, default='draft', tracking=True)
+    
+#     order_line = fields.One2many('weight.bridge.line', 'order_id', string='Weight Lines', copy=True)
+#     company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company.id)
+    
+
+#     READONLY_STATES = {
+#         'done': [('readonly', True)],
+#     }
+    
+#     @api.model
+#     def create(self, vals):
+#         if vals.get('name', 'New') == 'New':
+#             seq_date = None
+#             vals['date_weight'] = fields.Datetime.now()
+#             if 'date_weight' in vals:
+#                 seq_date = fields.Datetime.context_timestamp(self, fields.Datetime.to_datetime(vals['date_weight']))
+#             vals['name'] = self.env['ir.sequence'].next_by_code('weight.bridge', sequence_date=seq_date) or '/'
+#         return super(WeightBridge, self).create(vals)
+
+    
+#     @api.onchange('driver_name')
+#     def get_mobile_number(self):
+#         for line in self:
+#             line['mobile_number'] = line.driver_name.mobile
+    
+    
+#     def button_confirm(self):
+#         for order in self:
+#             order.write({'state': 'done'})
+#         return True
+    
+#     def button_draft(self):
+#         self.write({'state': 'draft'})
+#         return {}
+    
+
+            
+
+class WeightBridgeLine(models.Model):
+    _name = 'weight.bridge.line'
+    _description = 'Weight Bridge Line'
     _order = 'date_weight desc, id desc'
     
-    
-    driver_name = fields.Many2one('res.partner', string='Driver')
+    weight_name = fields.Char('Order Reference', required=True, index=True, copy=False, default='New')
+    name = fields.Text(string='Description')
+    # , compute='get_product_name'
+    product_id = fields.Many2one('product.product', string='Product', change_default=True)
+    barcode = fields.Char(related='product_id.barcode',string = 'Product Barcode')
+    #domain=[('purchase_ok', '=', True)],
+    driver_name = fields.Char(string='Driver Name')
     mobile_number = fields.Char('Mobile Number', compute='get_mobile_number')
+    phone_number = fields.Char('Phone Number',)
     car_number = fields.Char('Car Number')
-    reference = fields.Char('PO/SO No.')
-    permission_number = fields.Char('Permission Number')
-    date_weight = fields.Datetime('Date',readonly = True)
-    name = fields.Char('Order Reference', required=True, index=True, copy=False, default='New')
+    container_number = fields.Char('Container Number')
+    license_number = fields.Char('License Number')
+    weight_before = fields.Float('Weight Before')
+    weight_after = fields.Float('Weight After')
+    weight_total = fields.Float('Weight Total')
+#     order_id = fields.Many2one('weight.bridge', string='Weight Reference')
+    date_weight_line = fields.Datetime('Date per Line')
+    driver_id = fields.Many2one('res.partner', string='Driver', readonly=True, store=True)
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company.id)
+    time_spent = fields.Float('Time', precision_digits=2)
+    sale_order_id = fields.Many2one('sale.order', string='Sale Order Ref')
+    purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order Ref')
     state = fields.Selection([
         ('draft', 'Draft'),
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('refused', 'Refused'),
         ('done', 'Done'),
     ], string='Status', readonly=True, index=True, copy=False, default='draft', tracking=True)
     
-    order_line = fields.One2many('weight.bridge.line', 'order_id', string='Weight Lines', copy=True)
-    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company.id)
+    remarks = fields.Text('Remarks')
     
-
-    READONLY_STATES = {
-        'done': [('readonly', True)],
-    }
     
-    @api.model
-    def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            seq_date = None
-            vals['date_weight'] = fields.Datetime.now()
-            if 'date_weight' in vals:
-                seq_date = fields.Datetime.context_timestamp(self, fields.Datetime.to_datetime(vals['date_weight']))
-            vals['name'] = self.env['ir.sequence'].next_by_code('weight.bridge', sequence_date=seq_date) or '/'
-        return super(WeightBridge, self).create(vals)
-
-    
-    @api.onchange('driver_name')
+    @api.onchange('driver_id')
     def get_mobile_number(self):
         for line in self:
-            line['mobile_number'] = line.driver_name.mobile
+            line['mobile_number'] = line.driver_id.mobile
     
     
     def button_confirm(self):
@@ -59,32 +115,16 @@ class WeightBridge(models.Model):
         self.write({'state': 'draft'})
         return {}
     
-
-            
-
-class WeightBridgeLine(models.Model):
-    _name = 'weight.bridge.line'
-    _description = 'Weight Bridge Line'
-    _order = 'order_id, id'
     
-    
-    name = fields.Text(string='Description')
-    # , compute='get_product_name'
-    product_id = fields.Many2one('product.product', string='Product', change_default=True)
-    #domain=[('purchase_ok', '=', True)],
-    weight_before = fields.Float('Weight Before')
-    weight_after = fields.Float('Weight After')
-    weight_total = fields.Float('Weight Total')
-    order_id = fields.Many2one('weight.bridge', string='Weight Reference')
-    state = fields.Selection(related='order_id.state', store=True, readonly=False)
-    date_weight_line = fields.Datetime('Date per Line')
-    driver_id = fields.Many2one('res.partner', related='order_id.driver_name', string='Partner', readonly=True, store=True)
-    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company.id)
-    time_spent = fields.Float('Time', precision_digits=2)
-    sale_order_id = fields.Many2one('sale.order', string='Sale Order Ref')
-    purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order Ref')
-
-
+    @api.model
+    def create(self, vals):
+        if vals.get('weight_name', 'New') == 'New':
+            seq_date = None
+            vals['date_weight_line'] = fields.Datetime.now()
+            if 'date_weight_line' in vals:
+                seq_date = fields.Datetime.context_timestamp(self, fields.Datetime.to_datetime(vals['date_weight_line']))
+            vals['weight_name'] = self.env['ir.sequence'].next_by_code('weight.bridge.line', sequence_date=seq_date) or '/'
+        return super(WeightBridgeLine, self).create(vals)
     
     @api.onchange('weight_before','weight_after')
     def get_total_weight(self):

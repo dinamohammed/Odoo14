@@ -13,9 +13,9 @@ class WeightBridgeCreateLine(models.TransientModel):
     
     time_spent = fields.Float('Time', precision_digits=2)
     description = fields.Char('Description')
-    order_id = fields.Many2one('weight.bridge', string='Weight Reference', index=True, required=True, ondelete='cascade')
-    driver_id = fields.Many2one('res.partner', related='order_id.driver_name', string='Partner')
-    difference = fields.Float('Weight Differences',compute = "")
+    order_line_id = fields.Many2one('weight.bridge.line', string='Weight Reference', required=True)
+    driver_id = fields.Many2one('res.partner', string='Partner')
+    difference = fields.Float('Weight Differences')
     product_id = fields.Many2one('product.product', string='Product', change_default=True)
     end_weight = fields.Float('Weight After')
     sale_reference = fields.Many2one('sale.order', string='Sale Order Ref')
@@ -25,7 +25,7 @@ class WeightBridgeCreateLine(models.TransientModel):
     
     
     def save_weights(self):
-        line_id = self.env['weight.bridge.line'].search([('order_id', '=', self.order_id.id)], limit=1)
+        line_id = self.env['weight.bridge.line'].search([('id', '=', self.order_line_id.id)], limit=1)
         start_weight = line_id.weight_before
         end_weight = 0.0
         difference = 0.0
@@ -53,7 +53,7 @@ class WeightBridgeCreateLine2(models.TransientModel):
     _name = 'weight.bridge.create.line2'
     _description = "Create Weights from timer"
 
-    order_id = fields.Many2one('weight.bridge', string='Weight Reference', index=True, required=True, ondelete='cascade')
+#     order_id = fields.Many2one('weight.bridge.line', string='Weight Reference', index=True, required=True, ondelete='cascade')
     driver_id = fields.Many2one('res.partner', string='Partner')
     product_id = fields.Many2one('product.product', string='Product', change_default=True)
     start_weight = fields.Float('Weight Before')
@@ -66,7 +66,7 @@ class WeightBridgeCreateLine2(models.TransientModel):
     
     def save_weights2(self):
         values = {
-            'order_id': self.order_id.id,
+#             'order_id': self.order_id.id,
             'date_weight_line': datetime.now(),
             'driver_id': self.driver_id.id,
             'product_id': self.product_id.id,
@@ -75,8 +75,8 @@ class WeightBridgeCreateLine2(models.TransientModel):
             'purchase_order_id': self.purchase_reference.id,
             'weight_timer_start':self.start_time,
         }
-        self.order_id.write({
-            'date_weight': fields.datetime.now(),
-        })
+#         self.order_id.write({
+#             'date_weight': fields.datetime.now(),
+#         })
         return self.env['weight.bridge.line'].create(values)
 

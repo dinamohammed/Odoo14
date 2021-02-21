@@ -10,6 +10,15 @@
             <field name="padding">5</field>
             <field name="company_id" eval="False"/>
         </record>
+        
+        <!-- Sequences for purchase.order -->
+        <record id="seq_weight_bridge" model="ir.sequence">
+            <field name="name">Weight Bridge</field>
+            <field name="code">weight.bridge.line</field>
+            <field name="prefix">W</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
 
         <!-- Share Button in action menu -->
 <!--         <record id="model_purchase_order_action_share" model="ir.actions.server">

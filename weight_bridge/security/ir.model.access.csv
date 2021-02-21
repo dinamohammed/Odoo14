@@ -1,6 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_weight_bridge_user,weight.bridge.user,model_weight_bridge,weight_bridge.group_weight_bridge_user,1,1,1,1
-access_weight_bridge_manager,weight.bridge.manager,model_weight_bridge,weight_bridge.group_weight_bridge_manager,1,1,1,1
 
 access_weight_bridge_line_user,weight.bridge.line.user,model_weight_bridge_line,weight_bridge.group_weight_bridge_user,1,1,1,1
 access_weight_bridge_line_manager,weight.bridge.line.manager,model_weight_bridge_line,weight_bridge.group_weight_bridge_manager,1,1,1,1

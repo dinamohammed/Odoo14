@@ -8,7 +8,7 @@
             <form string="Save time and weights">
                 <group>
                     <group>
-                        <field name="order_id"/>
+                        <field name="order_line_id"/>
                         <label for="time_spent"/>
                         <div class="o_row" >
                             <field name="time_spent" widget="float_time" required="True"/>
@@ -42,7 +42,7 @@
             <form string="Add Weight and Reference">
                 <group>
                     <group string = "Add the Truck Data">
-                        <field name="order_id" required="True"/>
+<!--                         <field name="order_id" required="True"/> -->
                         <field name="product_id" required="True"/>
                         <field name="driver_id"/>
                         <label for="start_weight"/>
