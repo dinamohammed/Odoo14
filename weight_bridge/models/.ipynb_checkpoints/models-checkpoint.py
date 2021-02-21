@@ -65,7 +65,7 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 class WeightBridgeLine(models.Model):
     _name = 'weight.bridge.line'
     _description = 'Weight Bridge Line'
-    _order = 'date_weight desc, id desc'
+    _order = 'date_weight_line desc, id desc'
     
     weight_name = fields.Char('Order Reference', required=True, index=True, copy=False, default='New')
     name = fields.Text(string='Description')
