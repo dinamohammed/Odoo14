@@ -158,75 +158,12 @@ class WeightBridgeLine(models.Model):
         self.write({'weight_timer_start': fields.Datetime.now()})
         return self._action_create_weigth2(start_time)
 
-    def action_timer_pause(self):
-        self.write({'weight_timer_pause': fields.Datetime.now()})
-    
-    def action_timer_resume(self):
-        new_start = self.weight_timer_start + (fields.Datetime.now() - self.weight_timer_pause)
-        self.write({
-            'weight_timer_start': new_start,
-            'weight_timer_pause': False
-        })
 
     def action_timer_stop(self):
-#         self.ensure_one()
-#         start_time = self.weight_timer_start
         end_time = fields.Datetime.now()
-#         if start_time:  # timer was either running or paused
-#             pause_time = self.weight_timer_pause
-#             if pause_time:
-#                 start_time = start_time + (fields.Datetime.now() - pause_time)
-#             minutes_spent = (fields.Datetime.now() - start_time).total_seconds() / 60
         return self._action_create_weigth(end_time)
     
-#     def _action_create_weigth(self, end_time):
-#         return {
-#             "name": _("Confirm Time and Weight"),
-#             "type": 'ir.actions.act_window',
-#             "res_model": 'weight.bridge.create.line',
-#             "views": [[False, "form"]],
-#             "target": 'new',
-#             "context": {
-#                 **self.env.context,
-#                 'active_id': self.id,
-#                 'active_model': 'weight.bridge.line',
-#                 'default_end_time': end_time,
-#             },
-#         }
-    
-    
-#     def _action_create_weigth2(self,start_time):
-#         return {
-#             "name": _("Start Recording"),
-#             "type": 'ir.actions.act_window',
-#             "res_model": 'weight.bridge.create.line2',
-#             "views": [[False, "form"]],
-#             "target": 'new',
-#             "context": {
-#                 **self.env.context,
-#                 'active_id': self.id,
-#                 'active_model': 'weight.bridge.line',
-#                 'default_start_time': start_time,
-#             },
-#         }
 
-
-# class ProcurementGroup(models.Model):
-#     _inherit = 'procurement.group'
-    
-#     weightbridge_id = fields.Many2one('weight.bridge.line','WeightBridge orders')
-
-
-# class StockPicking(models.Model):
-#     _inherit = 'stock.picking'
-
-#     weightbridge_id = fields.Many2one(related="group_id.weightbridge_id", string="WeightBridge order", store=True, readonly=False)
-
-    
-    
-        
-    
-    
 
 
 
