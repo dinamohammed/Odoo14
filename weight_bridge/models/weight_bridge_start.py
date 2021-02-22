@@ -7,8 +7,8 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
             
 
-class WeightBridgeLine(models.Model):
-    _name = 'weight.bridge.line'
+class WeightBridgeStart(models.Model):
+    _name = 'weight.bridge.start'
     _description = 'Weight Bridge Line'
     _order = 'date_weight_line desc, id desc'
     
@@ -18,12 +18,12 @@ class WeightBridgeLine(models.Model):
     product_id = fields.Many2one('product.product', string='Product', change_default=True)
     barcode = fields.Char(related='product_id.barcode',string = 'Product Barcode')
     #domain=[('purchase_ok', '=', True)],
-    driver_name = fields.Char(string='Driver Name')
-    mobile_number = fields.Char('Mobile Number', compute='get_mobile_number')
-    phone_number = fields.Char('Phone Number',)
-    car_number = fields.Char('Car Number')
-    container_number = fields.Char('Container Number')
-    license_number = fields.Char('License Number')
+    driver_name = fields.Char(string='Driver Name', store=True)
+    mobile_number = fields.Char('Mobile Number', compute='get_mobile_number', store=True)
+    phone_number = fields.Char('Phone Number', store=True)
+    car_number = fields.Char('Car Number', store=True)
+    container_number = fields.Char('Container Number', store=True)
+    license_number = fields.Char('License Number', store=True)
     weight_before = fields.Float('Weight Before')
     weight_after = fields.Float('Weight After')
     weight_total = fields.Float('Weight Total')
@@ -34,6 +34,9 @@ class WeightBridgeLine(models.Model):
     time_spent = fields.Float('Time', precision_digits=2)
     sale_order_id = fields.Many2one('sale.order', string='Sale Order Ref')
     purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order Ref')
+    
+    weightbridgeline_id = fields.Many2one('weight.bridge.line', string='WeightBridge Line', store=True)
+    
     state = fields.Selection([
         ('draft', 'Draft'),
         ('pending', 'Pending'),
@@ -43,46 +46,6 @@ class WeightBridgeLine(models.Model):
     ], string='Status', readonly=True, index=True, copy=False, default='draft', tracking=True)
     
     remarks = fields.Text('Remarks')
-    
-    ################# For Transfers #######################
-    
-    picking_ids = fields.One2many('stock.picking', 'weightbridge_id', string='Transfers')
-    delivery_count = fields.Integer(string='Delivery Orders', compute='_compute_picking_ids')
-    
-    @api.depends('picking_ids')
-    def _compute_picking_ids(self):
-        for order in self:
-            order.delivery_count = len(order.picking_ids)
-            
-    def action_view_delivery(self):
-        '''
-        This function returns an action that display existing delivery orders
-        of given weightbridge ids. It can either be a in a list or in a form
-        view, if there is only one delivery order to show.
-        '''
-        action = self.env.ref('stock.action_picking_tree_all').read()[0]
-
-        pickings = self.mapped('picking_ids')
-        if len(pickings) > 1:
-            action['domain'] = [('id', 'in', pickings.ids)]
-        elif pickings:
-            form_view = [(self.env.ref('stock.view_picking_form').id, 'form')]
-            if 'views' in action:
-                action['views'] = form_view + [(state,view) for state,view in action['views'] if view != 'form']
-            else:
-                action['views'] = form_view
-            action['res_id'] = pickings.id
-        # Prepare the context.
-        picking_id = pickings.filtered(lambda l: l.picking_type_id.code == 'outgoing')
-        if picking_id:
-            picking_id = picking_id[0]
-        else:
-            picking_id = pickings[0]
-        action['context'] = dict(self._context, default_picking_id=picking_id.id,
-                                 default_picking_type_id=picking_id.picking_type_id.id, default_origin=self.weight_name,
-                                 default_group_id=picking_id.group_id.id)
-        return action
-
     
     
     
@@ -101,17 +64,7 @@ class WeightBridgeLine(models.Model):
         self.write({'state': 'draft'})
         return {}
     
-    
-    @api.model
-    def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            seq_date = None
-            vals['date_weight_line'] = fields.Datetime.now()
-            if 'date_weight_line' in vals:
-                seq_date = fields.Datetime.context_timestamp(self, fields.Datetime.to_datetime(vals['date_weight_line']))
-            vals['name'] = self.env['ir.sequence'].next_by_code('weight.bridge.line', sequence_date=seq_date) or '/'
-        return super(WeightBridgeLine, self).create(vals)
-    
+
     @api.onchange('weight_before','weight_after')
     def get_total_weight(self):
         for line in self:
@@ -179,48 +132,48 @@ class WeightBridgeLine(models.Model):
 #             minutes_spent = (fields.Datetime.now() - start_time).total_seconds() / 60
         return self._action_create_weigth(end_time)
     
-#     def _action_create_weigth(self, end_time):
-#         return {
-#             "name": _("Confirm Time and Weight"),
-#             "type": 'ir.actions.act_window',
-#             "res_model": 'weight.bridge.create.line',
-#             "views": [[False, "form"]],
-#             "target": 'new',
-#             "context": {
-#                 **self.env.context,
-#                 'active_id': self.id,
-#                 'active_model': 'weight.bridge.line',
-#                 'default_end_time': end_time,
-#             },
-#         }
+    def _action_create_weigth(self, end_time):
+        return {
+            "name": _("Confirm Time and Weight"),
+            "type": 'ir.actions.act_window',
+            "res_model": 'weight.bridge.create.line',
+            "views": [[False, "form"]],
+            "target": 'new',
+            "context": {
+                **self.env.context,
+                'active_id': self.id,
+                'active_model': 'weight.bridge.start',
+                'default_end_time': end_time,
+            },
+        }
     
     
-#     def _action_create_weigth2(self,start_time):
-#         return {
-#             "name": _("Start Recording"),
-#             "type": 'ir.actions.act_window',
-#             "res_model": 'weight.bridge.create.line2',
-#             "views": [[False, "form"]],
-#             "target": 'new',
-#             "context": {
-#                 **self.env.context,
-#                 'active_id': self.id,
-#                 'active_model': 'weight.bridge.line',
-#                 'default_start_time': start_time,
-#             },
-#         }
+    def _action_create_weigth2(self,start_time):
+        return {
+            "name": _("Start Recording"),
+            "type": 'ir.actions.act_window',
+            "res_model": 'weight.bridge.create.line2',
+            "views": [[False, "form"]],
+            "target": 'new',
+            "context": {
+                **self.env.context,
+                'active_id': self.id,
+                'active_model': 'weight.bridge.start',
+                'default_start_time': start_time,
+            },
+        }
 
 
-# class ProcurementGroup(models.Model):
-#     _inherit = 'procurement.group'
+class ProcurementGroup(models.Model):
+    _inherit = 'procurement.group'
     
-#     weightbridge_id = fields.Many2one('weight.bridge.line','WeightBridge orders')
+    weightbridge_id = fields.Many2one('weight.bridge.line','WeightBridge orders')
 
 
-# class StockPicking(models.Model):
-#     _inherit = 'stock.picking'
+class StockPicking(models.Model):
+    _inherit = 'stock.picking'
 
-#     weightbridge_id = fields.Many2one(related="group_id.weightbridge_id", string="WeightBridge order", store=True, readonly=False)
+    weightbridge_id = fields.Many2one(related="group_id.weightbridge_id", string="WeightBridge order", store=True, readonly=False)
 
     
     

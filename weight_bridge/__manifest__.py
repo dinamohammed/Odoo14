@@ -27,6 +27,7 @@
         'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
+        'views/weight_bridge_start_view.xml',
         'data/sequence.xml',
         'wizard/weight_bridge_line_create_view.xml',
     ],

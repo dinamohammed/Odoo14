@@ -1,63 +1,28 @@
 <odoo>
   <data>
 
-      
-    <!-- explicit list view definition -->
-      <record id="weightbridge_tree" model="ir.ui.view">
-          <field name="name">weight.bridge.line.tree</field>
-          <field name="model">weight.bridge.line</field>
-          <field name="arch" type="xml">
-              <tree string="WeightBridge">
-                  <field name="driver_id"/>
-                  <field name="mobile_number"/>
-                  <field name="name" string="Reference" readonly="1"/>
-                  <field name="car_number"/>
-                  <field name="product_id"/>
-                  <field name="date_weight_line"/>
-<!--                     <field name="state"/> -->
-                </tree>
-            </field>
-        </record>
-      
-      <record id="weights_action" model="ir.actions.act_window">
-          <field name="name">Weights</field>
-          <field name="type">ir.actions.act_window</field>
-          <field name="res_model">weight.bridge.line</field>
-          <field name="view_mode">tree,form</field>
-          <field name="view_id" ref="weightbridge_tree"/>
-          <field name="domain">[]</field>
-<!--            <field name="search_view_id" ref="view_purchase_order_filter"/>  -->
-          <field name="help" type="html">
-              <p class="o_view_nocontent_smiling_face">
-                Create Weights Record
-              </p><p>
-                The Weight contains the weights of the trucks before and after
-              </p>
-          </field>
-        </record>
-      
-      
-      <record id="weightbridge_form2" model="ir.ui.view">
-          <field name="name">weight.bridge.line.form</field>
-          <field name="model">weight.bridge.line</field>
+            
+      <record id="weightbridge_form3" model="ir.ui.view">
+          <field name="name">weight.bridge.start.form</field>
+          <field name="model">weight.bridge.start</field>
           <field name="arch" type="xml">
               <form string="Weights Screen" create="0">
                   <header>
                       <button name="button_confirm" type="object" states="draft" string="Confirm" 
                               class="oe_highlight" id="bid_confirm"/>
                       <button name="button_draft" states="done" string="Set to Draft" type="object" />
-<!--                       <field name="weight_timer_start" invisible="1"/>
+                      <field name="weight_timer_start" invisible="1"/>
                       <field name="time_spent" invisible="1"/>
                       <field name="weight_timer_start" invisible="1"/>
-                      <field name="weight_timer_pause" invisible="1"/> -->
-<!--                       <button class="btn-primary" name="action_timer_start" type="object" string="IN"/>
+                      <field name="weight_timer_pause" invisible="1"/>
+                      <button class="btn-primary" name="action_timer_start" type="object" string="IN"/>
                       <button class="btn-primary btn-danger o_fsm_stop" name="action_timer_stop" type="object" string="OUT"/>
                       <field name="weight_timer_start" widget="timesheet_timer" 
-                             class="text-danger ml-auto h2 ml-4 font-weight-bold"/> -->
+                             class="text-danger ml-auto h2 ml-4 font-weight-bold"/>
                       <field name="state" widget="statusbar" statusbar_visible="draft,pending,accepted,refused,done" readonly="1"/>
                   </header>
                   <sheet>
-                      <div class="oe_button_box" name="button_box">
+<!--                       <div class="oe_button_box" name="button_box">
                           <button type="object"
                                   name="action_view_delivery"
                                   class="oe_stat_button"
@@ -65,11 +30,10 @@
                                   attrs="{'invisible': [('delivery_count', '=', 0)]}" groups="base.group_user">
                               <field name="delivery_count" widget="statinfo" string="Delivery"/>
                           </button>
-                      </div>
-                      <group>
+                      </div> -->
+<!--                       <group>
                           <group name="car_data" string="Car Data">
                               <field name = "barcode"/>
-                              <field name = "product_id"/>
                               <field name = "driver_name"/>
                               <field name = "driver_id"/>
                               <field name = "mobile_number"/>
@@ -88,6 +52,7 @@
                               <field name = "name" readonly="1"/>
                               <field name = "sale_order_id" readonly="1"/>
                               <field name = "purchase_order_id" readonly="1"/>
+                              <field name = "weightbridgeline_id" readonly="1"/>
                           </group>
                           <group name="container_data" string="Container Data">
                               <field name = "weight_before" readonly="1"/>
@@ -98,26 +63,25 @@
                               <field name = "description" readonly="1"/>
                               <field name = "barcode" readonly="1"/>
                           </group>
-                      </group>
+                      </group> -->
                   </sheet>
                 </form>
             </field>
         </record>
 
+      
+      <record id="weights_action3" model="ir.actions.act_window">
+          <field name="name">Weights Start Stop</field>
+          <field name="type">ir.actions.act_window</field>
+          <field name="res_model">weight.bridge.start</field>
+          <field name="view_mode">form</field>
+          <field name="view_id" ref="weightbridge_form3"/>
+          <field name="domain">[]</field>
+        </record>
 
-    <!-- Top menu item -->
-    <menuitem name="WeightBridge"
-            id="menu_weight_bridge_root"
-            groups="group_weight_bridge_user,group_weight_bridge_manager"
-            web_icon="weight_bridge,static/description/icon.png"
-            sequence="28"/>
-      <!--             groups="group_purchase_manager,group_purchase_user"
--->
     <!-- menu categories -->
+      <menuitem name="Weights Start" id="weight_bridge.weights3" parent="weight_bridge.weights" action="weights_action3" sequence="17"/>
 
-    <menuitem name="Weights" id="weight_bridge.weights" parent="menu_weight_bridge_root" sequence="1"/>
-    <menuitem name="Configuration" id="weight_bridge.configuration" parent="menu_weight_bridge_root" sequence="2"/>
-    <menuitem name="Weights" id="weight_bridge.weights2" parent="weight_bridge.weights" action="weights_action" sequence="15"/>
 
 <!--     <menuitem name="APIs" id="weight_bridge.configuration.api" parent="weight_bridge.configuration"
               action="weight_api_action" sequence="16"/>

@@ -36,13 +36,12 @@ class WeightBridgeCreateLine(models.TransientModel):
         elif end_weight < start_weight:
             difference = start_weight - end_weight
         start_time = line_id['weight_timer_start']
-#         raise ValidationError('%s'%start_time)
         stop_time = self.weight_timer_stop
         minutes_spent = (datetime.now() - start_time).total_seconds() / 60
         
         return line_id.write({
             'date_weight_line': datetime.now(),
-            'name': self.description,
+            'description': self.description,
             'weight_total': difference,
             'weight_after': self.end_weight,
             'time_spent': minutes_spent * 60 / 3600,
@@ -60,7 +59,17 @@ class WeightBridgeCreateLine2(models.TransientModel):
     sale_reference = fields.Many2one('sale.order', string='Sale Order Ref')
     purchase_reference = fields.Many2one('purchase.order', string='Purchase Order Ref')
     
+    barcode = fields.Char(related='product_id.barcode',string = 'Product Barcode')
+    driver_name = fields.Char(string='Driver Name', store=True)
+    mobile_number = fields.Char('Mobile Number', related='driver_id.mobile', store=True)
+    phone_number = fields.Char('Phone Number', store=True)
+    car_number = fields.Char('Car Number', store=True)
+    container_number = fields.Char('Container Number', store=True)
+    license_number = fields.Char('License Number', store=True)
+#     company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env.company.id)
+    
     start_time = fields.Datetime("Weight Timer Start")
+    remarks = fields.Text('Remarks')
     
     
     
@@ -74,9 +83,19 @@ class WeightBridgeCreateLine2(models.TransientModel):
             'sale_order_id': self.sale_reference.id,
             'purchase_order_id': self.purchase_reference.id,
             'weight_timer_start':self.start_time,
+            
+            'barcode': self.barcode,
+            'driver_name': self.driver_name,
+            'mobile_number': self.mobile_number,
+            'phone_number': self.phone_number,
+            'car_number': self.car_number,
+            'container_number': self.container_number,
+            'license_number':self.license_number,
+#             'company_id':self.company_id,
+            'remarks':self.remarks,
+
         }
-#         self.order_id.write({
-#             'date_weight': fields.datetime.now(),
-#         })
+
+
         return self.env['weight.bridge.line'].create(values)
 

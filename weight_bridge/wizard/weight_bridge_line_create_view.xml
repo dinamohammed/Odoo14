@@ -56,6 +56,21 @@
                         <field name="purchase_reference"/>
                     </group>
                 </group>
+                <group>
+                    <group name="reference" string="Add Reference">
+                        <field name = "remarks"/>
+                    </group>
+                    <group name="car_data" string="Car Data">
+                              <field name = "barcode"/>
+                              <field name = "driver_name"/>
+                              <field name = "mobile_number"/>
+                              <field name = "phone_number"/>
+                              <field name = "car_number"/>
+                              <field name = "container_number"/>
+                              <field name = "license_number"/>
+<!--                               <field name = "company_id"/> -->
+                    </group>
+                </group>
                 <footer>
                     <button string="Save" type="object" name="save_weights2" class="btn btn-primary"/>
                     <button string="Cancel" special="cancel" type="object" class="btn btn-secondary"/>
