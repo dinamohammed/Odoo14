@@ -164,16 +164,16 @@ class WeightBridgeStart(models.Model):
         }
 
 
-class ProcurementGroup(models.Model):
-    _inherit = 'procurement.group'
+# class ProcurementGroup(models.Model):
+#     _inherit = 'procurement.group'
     
-    weightbridge_id = fields.Many2one('weight.bridge.line','WeightBridge orders')
+#     weightbridge_id = fields.Many2one('weight.bridge.line','WeightBridge orders')
 
 
-class StockPicking(models.Model):
-    _inherit = 'stock.picking'
+# class StockPicking(models.Model):
+#     _inherit = 'stock.picking'
 
-    weightbridge_id = fields.Many2one(related="group_id.weightbridge_id", string="WeightBridge order", store=True, readonly=False)
+#     weightbridge_id = fields.Many2one(related="group_id.weightbridge_id", string="WeightBridge order", store=True, readonly=False)
 
     
     
