@@ -3,3 +3,4 @@
 from . import models
 from . import weight_bridge_start
 from . import stock_picking_cus
+from . import quality_check_cus

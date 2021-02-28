@@ -19,7 +19,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['contacts','sale_management','purchase','stock'],
+    'depends': ['contacts','sale_management','purchase','stock','quality','quality_control'],
 
     # always loaded
     'data': [
@@ -27,6 +27,7 @@
         'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
+        'views/quality_check_view.xml',
         'views/weight_bridge_start_view.xml',
         'data/sequence.xml',
         'wizard/weight_bridge_line_create_view.xml',
