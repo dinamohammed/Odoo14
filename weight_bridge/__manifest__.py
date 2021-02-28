@@ -29,6 +29,7 @@
         'views/templates.xml',
         'views/quality_check_view.xml',
         'views/weight_bridge_start_view.xml',
+        'views/sale_order_cus_view.xml',
         'data/sequence.xml',
         'wizard/weight_bridge_line_create_view.xml',
     ],
