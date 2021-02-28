@@ -3,6 +3,8 @@
 from odoo import models, fields, api, _
 from datetime import datetime
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+from odoo.exceptions import UserError , ValidationError
+
 
 
             
@@ -44,47 +46,25 @@ class WeightBridgeLine(models.Model):
     
     remarks = fields.Text('Remarks')
     
-    ################# For Transfers #######################
     
-#     picking_ids = fields.One2many('stock.picking', 'weightbridge_id', string='Transfers')
-#     delivery_count = fields.Integer(string='Delivery Orders', compute='_compute_picking_ids')
-    
-#     @api.depends('picking_ids')
-#     def _compute_picking_ids(self):
-#         for order in self:
-#             order.delivery_count = len(order.picking_ids)
-            
-#     def action_view_delivery(self):
-#         '''
-#         This function returns an action that display existing delivery orders
-#         of given weightbridge ids. It can either be a in a list or in a form
-#         view, if there is only one delivery order to show.
-#         '''
-#         action = self.env.ref('stock.action_picking_tree_all').read()[0]
-
-#         pickings = self.mapped('picking_ids')
-#         if len(pickings) > 1:
-#             action['domain'] = [('id', 'in', pickings.ids)]
-#         elif pickings:
-#             form_view = [(self.env.ref('stock.view_picking_form').id, 'form')]
-#             if 'views' in action:
-#                 action['views'] = form_view + [(state,view) for state,view in action['views'] if view != 'form']
-#             else:
-#                 action['views'] = form_view
-#             action['res_id'] = pickings.id
-#         # Prepare the context.
-#         picking_id = pickings.filtered(lambda l: l.picking_type_id.code == 'outgoing')
-#         if picking_id:
-#             picking_id = picking_id[0]
-#         else:
-#             picking_id = pickings[0]
-#         action['context'] = dict(self._context, default_picking_id=picking_id.id,
-#                                  default_picking_type_id=picking_id.picking_type_id.id, default_origin=self.weight_name,
-#                                  default_group_id=picking_id.group_id.id)
-#         return action
-
-    
-    
+    def button_accept(self):
+        for order in self:
+            if order.state == 'pending':
+                if order.sale_order_id:
+#                     raise ValidationError('%s'%order.sale_order_id.picking_ids.filtered(lambda x: x.product_id.id == order.product_id.id))
+                    picks = order.sale_order_id.picking_ids.filtered(lambda x: x.product_id.id == order.product_id.id)
+                    for move in picks.move_lines:
+                        for move_line in move.move_line_ids.filtered(lambda m: m.state not in ['done', 'cancel']):
+                            move_line.qty_done = order.weight_total
+#                             move_line.write{'state':'done'}
+#                     picks.write{'state':'done'}
+                    order.sale_order_id.picking_ids.weightbridgeline_id = order.id
+                    order.write({'state': 'accepted'})
+                elif order.purchase_order_id:
+                    raise ValidationError('For Po Transfers you need to create quality check first...')
+            else:
+                raise ValidationError('Accept only Pending Orders...')
+        return True
     
     @api.onchange('driver_id')
     def get_mobile_number(self):
@@ -94,11 +74,15 @@ class WeightBridgeLine(models.Model):
     
     def button_confirm(self):
         for order in self:
-            order.write({'state': 'done'})
+            order.write({'state': 'pending'})
         return True
     
     def button_draft(self):
         self.write({'state': 'draft'})
+        return {}
+    
+    def button_refuse(self):
+        self.write({'state': 'refused'})
         return {}
     
     
@@ -164,9 +148,4 @@ class WeightBridgeLine(models.Model):
         return self._action_create_weigth(end_time)
     
 
-
-
-
-    
-    
         

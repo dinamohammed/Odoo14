@@ -46,14 +46,9 @@
                       <button name="button_confirm" type="object" states="draft" string="Confirm" 
                               class="oe_highlight" id="bid_confirm"/>
                       <button name="button_draft" states="done" string="Set to Draft" type="object" />
-<!--                       <field name="weight_timer_start" invisible="1"/>
-                      <field name="time_spent" invisible="1"/>
-                      <field name="weight_timer_start" invisible="1"/>
-                      <field name="weight_timer_pause" invisible="1"/> -->
-<!--                       <button class="btn-primary" name="action_timer_start" type="object" string="IN"/>
-                      <button class="btn-primary btn-danger o_fsm_stop" name="action_timer_stop" type="object" string="OUT"/>
-                      <field name="weight_timer_start" widget="timesheet_timer" 
-                             class="text-danger ml-auto h2 ml-4 font-weight-bold"/> -->
+                      <button name="button_accept" type="object" states="pending" string="To Accept" 
+                              class="oe_highlight" id="bid_confirm"/>
+                      <button name="button_refuse" states="pending" string="To Refuse" type="object" />
                       <field name="state" widget="statusbar" statusbar_visible="draft,pending,accepted,refused,done" readonly="1"/>
                   </header>
                   <sheet>
