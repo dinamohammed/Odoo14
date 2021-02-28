@@ -3,7 +3,7 @@
     'name': "WeightBridge",
 
     'summary': """
-        WeightBridge is integrated with Odoo""",
+        WeightBridge is integrated with Odoo; lost version""",
 
     'description': """
        WeightBridge is integrated with Odoo using this module
