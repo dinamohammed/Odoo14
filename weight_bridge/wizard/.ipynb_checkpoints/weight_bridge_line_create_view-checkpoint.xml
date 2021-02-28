@@ -9,11 +9,11 @@
                 <group>
                     <group>
                         <field name="order_line_id"/>
-                        <label for="time_spent"/>
+<!--                         <label for="time_spent"/>
                         <div class="o_row" >
                             <field name="time_spent" widget="float_time" required="True"/>
                             hours
-                        </div>
+                        </div> -->
                         <label for="end_weight"/>
                         <div class="o_row" >
                             <field name="end_weight" required="True"/>

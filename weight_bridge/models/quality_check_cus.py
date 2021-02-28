@@ -11,7 +11,8 @@ from odoo.exceptions import UserError , ValidationError
 class QualityCheck(models.Model):
     _inherit = 'quality.check'
 
-    weightbridgeline_id = fields.Many2one('weight.bridge.line', string='WeightBridge Order')
+    weightbridgeline_id = fields.Many2one('weight.bridge.line', string='WeightBridge Order',
+                                         domain = "[('purchase_order_id', '!=', False)]")
     
     pass_location_id = fields.Many2one(
         'stock.location', 'Pass Location',

@@ -4,8 +4,7 @@
             <field name="name">	quality.check.view.form.inheritt33</field>
             <field name="model">quality.check</field>
             <field name="inherit_id" ref="quality_control.quality_check_view_form"/>
-            <field name="mode">primary</field>
-            <field name="priority">10</field>
+
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='product_id']" position="after">
                     <field name="weightbridgeline_id" required="1"/>
@@ -15,7 +14,7 @@
                          <group name= "locations" string="Locations">
                              <field name="pass_location_id"/>
                              <field name="fail_location_id"/>
-                             </group>
+                         </group>
                      </group>
                 </xpath>
             </field>
