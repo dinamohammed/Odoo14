@@ -61,12 +61,13 @@ class WeightBridgeLine(models.Model):
                     order.write({'state': 'accepted'})
                 elif order.purchase_order_id:
                     if order.quality_check_id:
-                        order.do_pass()
+                        order.quality_check_id.do_pass()
                         picks = order.purchase_order_id.picking_ids.filtered(
                             lambda x: x.product_id.id == order.product_id.id)
                         for move in picks.move_lines:
                             for move_line in move.move_line_ids.filtered(lambda m: m.state not in ['done', 'cancel']):
                                 move_line.qty_done = order.weight_total
+                        picks.button_validate()
                         order.purchase_order_id.picking_ids.weightbridgeline_id = order.id
                         order.write({'state': 'accepted'})
                     else:
