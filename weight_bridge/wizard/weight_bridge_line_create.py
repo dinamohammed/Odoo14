@@ -71,6 +71,16 @@ class WeightBridgeCreateLine2(models.TransientModel):
     start_time = fields.Datetime("Weight Timer Start")
     remarks = fields.Text('Remarks')
     
+    @api.onchange('sale_reference','purchase_reference')
+    def get_values_on_id(self):
+        for line in self:
+            if line.sale_reference:
+                line['driver_id'] = line.sale_reference.partner_id.id
+                line['product_id'] = line.sale_reference.order_line.product_id.id
+            elif line.purchase_reference:
+                line['driver_id'] = line.purchase_reference.partner_id.id
+                line['product_id'] = line.purchase_reference.order_line.product_id.id
+    
     
     
     def save_weights2(self):
