@@ -83,6 +83,7 @@
                               <field name = "name" readonly="1"/>
                               <field name = "sale_order_id" readonly="1"/>
                               <field name = "purchase_order_id" readonly="1"/>
+                              <field name = "quality_check_id"/>
                           </group>
                           <group name="container_data" string="Container Data">
                               <field name = "weight_before" readonly="1"/>

@@ -18,3 +18,9 @@ class SaleOrder(models.Model):
     
     period_month = fields.Boolean('Divide Transfers')
     no_of_transfers = fields.Integer('Transfers per month', default = fields.Date.today().day)
+    
+    
+#     def _action_confirm(self):
+#         for _ in range(5):
+#             self.picking_ids.create()
+#         return super(SaleOrder, self)._action_confirm()

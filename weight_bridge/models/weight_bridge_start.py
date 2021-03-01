@@ -5,8 +5,6 @@ from datetime import datetime
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 
-            
-
 class WeightBridgeStart(models.Model):
     _name = 'weight.bridge.start'
     _description = 'Weight Bridge Line'
@@ -30,7 +28,8 @@ class WeightBridgeStart(models.Model):
 #     order_id = fields.Many2one('weight.bridge', string='Weight Reference')
     date_weight_line = fields.Datetime('Date per Line')
     driver_id = fields.Many2one('res.partner', string='Driver', store=True)
-    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company.id)
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True,
+                                 default=lambda self: self.env.company.id)
     time_spent = fields.Float('Time', precision_digits=2)
     sale_order_id = fields.Many2one('sale.order', string='Sale Order Ref')
     purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order Ref')
@@ -47,7 +46,15 @@ class WeightBridgeStart(models.Model):
     
     remarks = fields.Text('Remarks')
     
-    
+    @api.onchange('sale_order_id','purchase_order_id')
+    def get_values_on_id(self):
+        for line in self:
+            if line.sale_order_id:
+                line['driver_id'] = line.sale_order_id.partner_id.id
+                line['product_id'] = line.sale_order_id.order_line.product_id.id
+            elif line.purchase_order_id:
+                line['driver_id'] = line.purchase_order_id.partner_id.id
+                line['product_id'] = line.purchase_order_id.order_line.product_id.id
     
     @api.onchange('driver_id')
     def get_mobile_number(self):

@@ -18,6 +18,7 @@ class WeightBridgeLine(models.Model):
     description = fields.Text(string='Description')
     # , compute='get_product_name'
     product_id = fields.Many2one('product.product', string='Product', change_default=True)
+    quality_check_id = fields.Many2one('quality.check', string='Quality')
     barcode = fields.Char(related='product_id.barcode',string = 'Product Barcode')
     #domain=[('purchase_ok', '=', True)],
     driver_name = fields.Char(string='Driver Name')
@@ -31,7 +32,7 @@ class WeightBridgeLine(models.Model):
     weight_total = fields.Float('Weight Total')
 #     order_id = fields.Many2one('weight.bridge', string='Weight Reference')
     date_weight_line = fields.Datetime('Date per Line')
-    driver_id = fields.Many2one('res.partner', string='Driver', store=True)
+    driver_id = fields.Many2one('res.partner', string='Partner', store=True)
     company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company.id)
     time_spent = fields.Float('Time', precision_digits=2)
     sale_order_id = fields.Many2one('sale.order', string='Sale Order Ref')
@@ -51,18 +52,25 @@ class WeightBridgeLine(models.Model):
         for order in self:
             if order.state == 'pending':
                 if order.sale_order_id:
-#                     raise ValidationError('%s'%order.sale_order_id.picking_ids.filtered(lambda x: x.product_id.id == order.product_id.id))
                     picks = order.sale_order_id.picking_ids.filtered(lambda x: x.product_id.id == order.product_id.id)
                     for move in picks.move_lines:
                         for move_line in move.move_line_ids.filtered(lambda m: m.state not in ['done', 'cancel']):
                             move_line.qty_done = order.weight_total
-#                             if move_line.qty_done == move_line.product_uom_qty:
-#                                 move_line.write({'state':'done'})
                     picks.button_validate()
                     order.sale_order_id.picking_ids.weightbridgeline_id = order.id
                     order.write({'state': 'accepted'})
                 elif order.purchase_order_id:
-                    raise ValidationError('For Po Transfers you need to create quality check first...')
+                    if order.quality_check_id:
+                        order.do_pass()
+                        picks = order.purchase_order_id.picking_ids.filtered(
+                            lambda x: x.product_id.id == order.product_id.id)
+                        for move in picks.move_lines:
+                            for move_line in move.move_line_ids.filtered(lambda m: m.state not in ['done', 'cancel']):
+                                move_line.qty_done = order.weight_total
+                        order.purchase_order_id.picking_ids.weightbridgeline_id = order.id
+                        order.write({'state': 'accepted'})
+                    else:
+                        raise ValidationError('You need to Add value to the Quality check field..')
             else:
                 raise ValidationError('Accept only Pending Orders...')
         return True
@@ -71,7 +79,7 @@ class WeightBridgeLine(models.Model):
     def get_mobile_number(self):
         for line in self:
             line['mobile_number'] = line.driver_id.mobile
-    
+                
     
     def button_confirm(self):
         for order in self:
