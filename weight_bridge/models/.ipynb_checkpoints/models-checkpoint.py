@@ -56,14 +56,16 @@ class WeightBridgeLine(models.Model):
                     for move in picks.move_lines:
                         for move_line in move.move_line_ids.filtered(lambda m: m.state not in ['done', 'cancel']):
                             move_line.qty_done = order.weight_total
-                    picks.button_validate()
+#                     raise ValidationError('%s'%picks.button_validate())
+                    picks.write({'state':'done'})
                     order.sale_order_id.picking_ids.weightbridgeline_id = order.id
                     order.write({'state': 'accepted'})
                 elif order.purchase_order_id:
                     if order.quality_check_id:
                         order.quality_check_id.do_pass()
-                        picks = order.purchase_order_id.picking_ids.filtered(
-                            lambda x: x.product_id.id == order.product_id.id)
+#                         picks = order.purchase_order_id.picking_ids.filtered(
+#                             lambda x: x.product_id.id == order.product_id.id)
+                        picks = order.quality_check_id.picking_id
                         for move in picks.move_lines:
                             for move_line in move.move_line_ids.filtered(lambda m: m.state not in ['done', 'cancel']):
                                 move_line.qty_done = order.weight_total
