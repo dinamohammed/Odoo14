@@ -11,6 +11,7 @@ from odoo.exceptions import UserError , ValidationError
 
 class WeightBridgeLine(models.Model):
     _name = 'weight.bridge.line'
+#     _inherit = 'stock.picking'
     _description = 'Weight Bridge Line'
     _order = 'date_weight_line desc, id desc'
     
@@ -36,6 +37,7 @@ class WeightBridgeLine(models.Model):
     company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company.id)
     time_spent = fields.Float('Time', precision_digits=2)
     sale_order_id = fields.Many2one('sale.order', string='Sale Order Ref')
+    sale_id = fields.Many2one(related='sale_order_id.picking_ids.sale_id')
     purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order Ref')
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -46,18 +48,33 @@ class WeightBridgeLine(models.Model):
     ], string='Status', readonly=True, index=True, copy=False, default='draft', tracking=True)
     
     remarks = fields.Text('Remarks')
+    picking_id = fields.Many2one('stock.picking', string='Transfer', store=True)
     
+    @api.onchange('sale_order_id')
+    def onchange_sale_order_id(self):
+        # force domain on task when project is set
+        if self.sale_order_id:
+            if self.sale_order_id != self.picking_id.sale_id:
+                # reset task when changing project
+                self.picking_id = False
+            return {'domain': {
+                'picking_id': [('sale_order_id', '=', self.sale_order_id.id)]
+            }}
     
     def button_accept(self):
         for order in self:
             if order.state == 'pending':
                 if order.sale_order_id:
-                    picks = order.sale_order_id.picking_ids.filtered(lambda x: x.product_id.id == order.product_id.id)
-                    for move in picks.move_lines:
-                        for move_line in move.move_line_ids.filtered(lambda m: m.state not in ['done', 'cancel']):
-                            move_line.qty_done = order.weight_total
-#                     raise ValidationError('%s'%picks.button_validate())
-                    picks.write({'state':'done'})
+                    if order.picking_id:
+                        picks = order.picking_id
+                        for move in picks.move_lines:
+                            for move_line in move.move_line_ids.filtered(lambda m: m.state not in ['done', 'cancel']):
+                                move_line.qty_done = order.weight_total
+                    else:
+                        picks = order.sale_order_id.picking_ids.filtered(lambda x: x.product_id.id == order.product_id.id)
+                        for move in picks.move_lines:
+                            for move_line in move.move_line_ids.filtered(lambda m: m.state not in ['done', 'cancel']):
+                                move_line.qty_done = order.weight_total
                     order.sale_order_id.picking_ids.weightbridgeline_id = order.id
                     order.write({'state': 'accepted'})
                 elif order.purchase_order_id:
@@ -94,8 +111,30 @@ class WeightBridgeLine(models.Model):
         return {}
     
     def button_refuse(self):
-        self.write({'state': 'refused'})
+#         view = self.env.ref('stock.view_immediate_transfer')
+#         wiz = self.env['stock.immediate.transfer'].default_get({
+#                 'pick_ids': [(4, self.sale_order_id.picking_ids.id)]})
+#         wiz2 = self.env['stock.immediate.transfer'].process()
+        self.sale_order_id.picking_ids.button_validate()
+#         self.write({'state': 'refused'})
         return {}
+
+#     def _action_generate_immediate_wizard(self, show_transfers=False):
+#         view = self.env.ref('stock.view_immediate_transfer')
+#         picks = self.sale_order_id.picking_ids
+#         1/0
+#         wiz = self.env['stock.immediate.transfer'].default_get({'pick_ids': [(4, p.id) for p in picks]})
+#         return {
+# #             'name': _('Immediate Transfer?'),
+# #             'type': 'ir.actions.act_window',
+# #             'view_mode': 'form',
+# #             'res_model': 'stock.immediate.transfer',
+# #             'views': [(view.id, 'form')],
+# #             'view_id': view.id,
+# #             'target': 'new',
+# #             'context': dict(self.env.context, default_show_transfers=show_transfers, default_pick_ids=[(4, p.id) for p in picks]),
+#         }
+    
     
     
     @api.model

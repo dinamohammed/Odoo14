@@ -82,6 +82,9 @@
                           <group name="reference" string="Reference">
                               <field name = "name" readonly="1"/>
                               <field name = "sale_order_id" readonly="1"/>
+                              <field name = "sale_id" invisible = "1"/>
+                              <field name = "picking_id" attrs="{'invisible': [('sale_order_id', '=', False)]}"
+                                     domain="[('sale_id', '=', sale_id)]" context="{'default_sale_id': sale_id}"/>
                               <field name = "purchase_order_id" readonly="1"/>
                               <field name = "quality_check_id"/>
                           </group>
