@@ -13,6 +13,10 @@
                          </group>
                      </group>
                 </xpath>
+                <xpath expr="//button[@name='action_confirm']" position="after">
+                    <button name="multi_transfers" string="Multi Transfers" type="object" 
+                            attrs="{'invisible': [('state', 'not in', ['sale'])]}"/>
+                </xpath>
             </field>
         </record>
   </data>

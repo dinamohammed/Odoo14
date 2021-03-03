@@ -20,7 +20,13 @@ class SaleOrder(models.Model):
     no_of_transfers = fields.Integer('Transfers per month', default = fields.Date.today().day)
     
     
-#     def _action_confirm(self):
-#         for _ in range(5):
-#             self.picking_ids.create()
-#         return super(SaleOrder, self)._action_confirm()
+    def multi_transfers(self):
+        product_quantity = self.order_line[0].product_uom_qty
+        quantity_divide = int(product_quantity / self.no_of_transfers)
+        for _ in range(self.no_of_transfers):
+            self.picking_ids[0].copy()
+        for pick in self.picking_ids:
+            pick.write({'state':'waiting'})
+            for move in pick.move_ids_without_package:
+                move.write({'product_uom_qty':quantity_divide,
+                           'state':'waiting'})

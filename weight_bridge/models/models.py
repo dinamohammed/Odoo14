@@ -111,31 +111,9 @@ class WeightBridgeLine(models.Model):
         return {}
     
     def button_refuse(self):
-#         view = self.env.ref('stock.view_immediate_transfer')
-#         wiz = self.env['stock.immediate.transfer'].default_get({
-#                 'pick_ids': [(4, self.sale_order_id.picking_ids.id)]})
-#         wiz2 = self.env['stock.immediate.transfer'].process()
-        self.sale_order_id.picking_ids.button_validate()
-#         self.write({'state': 'refused'})
+        self.write({'state': 'refused'})
         return {}
 
-#     def _action_generate_immediate_wizard(self, show_transfers=False):
-#         view = self.env.ref('stock.view_immediate_transfer')
-#         picks = self.sale_order_id.picking_ids
-#         1/0
-#         wiz = self.env['stock.immediate.transfer'].default_get({'pick_ids': [(4, p.id) for p in picks]})
-#         return {
-# #             'name': _('Immediate Transfer?'),
-# #             'type': 'ir.actions.act_window',
-# #             'view_mode': 'form',
-# #             'res_model': 'stock.immediate.transfer',
-# #             'views': [(view.id, 'form')],
-# #             'view_id': view.id,
-# #             'target': 'new',
-# #             'context': dict(self.env.context, default_show_transfers=show_transfers, default_pick_ids=[(4, p.id) for p in picks]),
-#         }
-    
-    
     
     @api.model
     def create(self, vals):
