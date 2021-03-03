@@ -5,6 +5,8 @@ from datetime import datetime
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from odoo.exceptions import UserError , ValidationError
 from calendar import monthrange
+from datetime import timedelta 
+
             
 
 class StockPicking(models.Model):
@@ -27,8 +29,12 @@ class SaleOrder(models.Model):
         quantity_divide = int(product_quantity / self.no_of_transfers)
         for _ in range(self.no_of_transfers-1):
             self.picking_ids[0].copy()
+        next_date = self.date_order
         for pick in self.picking_ids:
-            pick.write({'state':'waiting'})
+            pick.write({'state':'waiting',
+                       'scheduled_date': next_date,
+                       'date_deadline': next_date})
+            next_date = next_date + timedelta(days=1)
             for move in pick.move_ids_without_package:
                 move.write({'product_uom_qty':quantity_divide,
                            'state':'waiting'})
