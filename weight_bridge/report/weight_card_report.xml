@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_print_card">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <div class="row">                                    
+                            <br/>
+                            <h1 t-field="o.weightbridgeline_id.name" class="mt0 float-left"/>
+                            </div>
+                            <div class="row mt48 mb32">
+                                <div t-if="o.weightbridgeline_id.sale_order_id" class="col-auto">
+                                    <strong>Sale Order Ref:</strong>
+                                    <p t-field="o.weightbridgeline_id.sale_order_id.name"/>
+                                </div>
+                                <div t-if="o.weightbridgeline_id.purchase_order_id" class="col-auto">
+                                    <strong>Purchase Order Ref:</strong>
+                                    <p t-field="o.weightbridgeline_id.purchase_order_id.name"/>
+                                </div>
+                                <div t-if="o.weightbridgeline_id.product_id.name" class="col-auto">
+                                    <strong>Product:</strong>
+                                    <p t-field="o.weightbridgeline_id.product_id.name"/>
+                                </div>
+                                <div t-if="o.weightbridgeline_id.product_id.barcode" class="col-auto">
+                                    <strong>Product Barcode:</strong>
+                                    <p t-field="o.weightbridgeline_id.product_id.barcode"/>
+                                </div>
+                                <div t-if="o.weightbridgeline_id.mobile_number" class="col-auto">
+                                    <strong>Mobile no:</strong>
+                                    <p t-field="o.weightbridgeline_id.mobile_number"/>
+                                </div>
+                                <div t-if="o.weightbridgeline_id.weight_before" class="col-auto">
+                                    <strong>Weight In:</strong>
+                                    <p t-field="o.weightbridgeline_id.weight_before"/>
+                                </div>
+                                <div t-if="o.weightbridgeline_id.date_weight_line" class="col-auto">
+                                    <strong>Date Time:</strong>
+                                    <p t-field="o.weightbridgeline_id.date_weight_line"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

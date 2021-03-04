@@ -14,8 +14,10 @@
                       <field name="weight_timer_pause" invisible="1"/>
                       <button class="btn-primary" name="action_timer_start" type="object" string="IN"/>
                       <button class="btn-primary btn-danger o_fsm_stop" name="action_timer_stop" type="object" string="OUT"/>
-                      <field name="weight_timer_start" widget="timesheet_timer" 
-                             class="text-danger ml-auto h2 ml-4 font-weight-bold"/>
+                      <button name="do_print_card" string="Print" type="object"/>
+
+<!--                       <field name="weight_timer_start" widget="timesheet_timer" 
+                             class="text-danger ml-auto h2 ml-4 font-weight-bold"/> -->
                       <field name="state" widget="statusbar" statusbar_visible="draft,pending,accepted,refused,done" readonly="1"/>
                   </header>
                   <sheet>

@@ -111,6 +111,8 @@ class WeightBridgeLine(models.Model):
         return {}
     
     def button_refuse(self):
+        if order.quality_check_id:
+            order.quality_check_id.do_fail()
         self.write({'state': 'refused'})
         return {}
 

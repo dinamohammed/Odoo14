@@ -52,16 +52,11 @@ class WeightBridgeStart(models.Model):
         for line in self:
             line['mobile_number'] = line.driver_id.mobile
     
-    
-    def button_confirm(self):
-        for order in self:
-            order.write({'state': 'done'})
-        return True
-    
-    def button_draft(self):
-        self.write({'state': 'draft'})
-        return {}
-    
+    def do_print_card(self):
+#         self.write({'printed': True})
+        weight_id = self.env['weight.bridge.line'].search([])[-1]
+        self.weightbridgeline_id = weight_id.id
+        return self.env.ref('weight_bridge.action_print_card').report_action(self)
 
     @api.onchange('weight_before','weight_after')
     def get_total_weight(self):
@@ -160,25 +155,6 @@ class WeightBridgeStart(models.Model):
                 'default_start_time': start_time,
             },
         }
-
-
-# class ProcurementGroup(models.Model):
-#     _inherit = 'procurement.group'
-    
-#     weightbridge_id = fields.Many2one('weight.bridge.line','WeightBridge orders')
-
-
-# class StockPicking(models.Model):
-#     _inherit = 'stock.picking'
-
-#     weightbridge_id = fields.Many2one(related="group_id.weightbridge_id", string="WeightBridge order", store=True, readonly=False)
-
-    
-    
-        
-    
-    
-
 
 
     

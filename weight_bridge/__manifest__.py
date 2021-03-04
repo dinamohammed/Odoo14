@@ -32,6 +32,8 @@
         'views/sale_order_cus_view.xml',
         'data/sequence.xml',
         'wizard/weight_bridge_line_create_view.xml',
+        'report/reports.xml',
+        'report/weight_card_report.xml',
     ],
     'installable': True,
     'auto_install': False,
