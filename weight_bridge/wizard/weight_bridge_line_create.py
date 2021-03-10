@@ -54,8 +54,8 @@ class WeightBridgeCreateLine2(models.TransientModel):
     _description = "Create Weights from timer"
 
 #     order_id = fields.Many2one('weight.bridge.line', string='Weight Reference', index=True, required=True, ondelete='cascade')
-    driver_id = fields.Many2one('res.partner', string='Partner')
-    product_id = fields.Many2one('product.product', string='Product', change_default=True)
+    driver_id = fields.Many2one('res.partner', string='Partner', readonly=True)
+    product_id = fields.Many2one('product.product', string='Product', change_default=True, readonly=True)
     start_weight = fields.Float('Weight Before')
     sale_reference = fields.Many2one('sale.order', string='Sale Order Ref')
     purchase_reference = fields.Many2one('purchase.order', string='Purchase Order Ref')
