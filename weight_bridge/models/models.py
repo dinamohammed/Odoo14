@@ -39,6 +39,8 @@ class WeightBridgeLine(models.Model):
     sale_order_id = fields.Many2one('sale.order', string='Sale Order Ref')
     sale_id = fields.Many2one(related='sale_order_id.picking_ids.sale_id')
     purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order Ref')
+    purchase_id = fields.Many2one(related='purchase_order_id.picking_ids.purchase_id')
+
     state = fields.Selection([
         ('draft', 'Draft'),
         ('pending', 'Pending'),
@@ -63,11 +65,22 @@ class WeightBridgeLine(models.Model):
     def onchange_sale_order_id(self):
         # force domain on task when project is set
         if self.sale_order_id:
-            if self.sale_order_id != self.picking_id.sale_id:
+            if self.sale_order_id != self.picking_id.purchase_id:
                 # reset task when changing project
                 self.picking_id = False
             return {'domain': {
                 'picking_id': [('sale_order_id', '=', self.sale_order_id.id)]
+            }}
+        
+    @api.onchange('purchase_order_id')
+    def onchange_purchase_order_id(self):
+        # force domain on task when project is set
+        if self.purchase_order_id:
+            if self.purchase_order_id != self.picking_id.sale_id:
+                # reset task when changing project
+                self.picking_id = False
+            return {'domain': {
+                'picking_id': [('purchase_order_id', '=', self.purchase_order_id.id)]
             }}
     
     def button_accept(self):
