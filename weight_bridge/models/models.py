@@ -95,11 +95,22 @@ class WeightBridgeLine(models.Model):
                         for move in picks.move_lines:
                             for move_line in move.move_line_ids.filtered(lambda m: m.state not in ['done', 'cancel']):
                                 move_line.qty_done = order.weight_total
-                        picks.button_validate()
+#                         picks.button_validate()
                         order.purchase_order_id.picking_ids.weightbridgeline_id = order.id
                         order.write({'state': 'accepted'})
                     else:
-                        raise ValidationError('You need to Add value to the Quality check field..')
+                        if order.picking_id:
+                            picks = order.picking_id
+                            for move in picks.move_lines:
+                                for move_line in move.move_line_ids.filtered(lambda m: m.state not in ['done', 'cancel']):
+                                    move_line.qty_done = order.weight_total
+                        else:
+                            picks = order.purchase_order_id.picking_ids.filtered(lambda x: x.product_id.id == order.product_id.id)
+                            for move in picks.move_lines:
+                                for move_line in move.move_line_ids.filtered(lambda m: m.state not in ['done', 'cancel']):
+                                    move_line.qty_done = order.weight_total
+                        order.purchase_order_id.picking_ids.weightbridgeline_id = order.id
+                        order.write({'state': 'accepted'})
             else:
                 raise ValidationError('Accept only Pending Orders...')
         return True
