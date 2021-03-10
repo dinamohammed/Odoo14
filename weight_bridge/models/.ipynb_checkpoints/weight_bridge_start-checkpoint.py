@@ -13,7 +13,7 @@ class WeightBridgeStart(models.Model):
     name = fields.Char('Order Reference', required=True, index=True, copy=False, default='New')
     description = fields.Text(string='Description')
     # , compute='get_product_name'
-    product_id = fields.Many2one('product.product', string='Product', change_default=True)
+    product_id = fields.Many2one('product.product', string='Product', change_default=True, readonly=True)
     barcode = fields.Char(related='product_id.barcode',string = 'Product Barcode')
     #domain=[('purchase_ok', '=', True)],
     driver_name = fields.Char(string='Driver Name', store=True)
@@ -27,7 +27,7 @@ class WeightBridgeStart(models.Model):
     weight_total = fields.Float('Weight Total')
 #     order_id = fields.Many2one('weight.bridge', string='Weight Reference')
     date_weight_line = fields.Datetime('Date per Line')
-    driver_id = fields.Many2one('res.partner', string='Partner', store=True)
+    driver_id = fields.Many2one('res.partner', string='Partner', store=True, readonly=True)
     company_id = fields.Many2one('res.company', 'Company', required=True, index=True,
                                  default=lambda self: self.env.company.id)
     time_spent = fields.Float('Time', precision_digits=2)

@@ -24,7 +24,7 @@
                             <field name="difference" readonly="1"/>
                             Kilograms
                         </div> -->
-                        <field name="description" widget="text" required="True"/>
+<!--                         <field name="description" widget="text" required="True"/> -->
                     </group>
                 </group>
                 <footer>

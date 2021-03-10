@@ -8,13 +8,18 @@
           <field name="model">weight.bridge.line</field>
           <field name="arch" type="xml">
               <tree string="WeightBridge">
+                  <field name="name" string="Reference"/>
                   <field name="driver_id"/>
-                  <field name="mobile_number"/>
-                  <field name="name" string="Reference" readonly="1"/>
-                  <field name="car_number"/>
                   <field name="product_id"/>
-                  <field name="date_weight_line"/>
-<!--                     <field name="state"/> -->
+                  
+                  <field name="weight_before"/>
+                  <field name="weight_after"/>
+                  <field name="weight_total"/>
+                  
+                  <field name="datetime_in"/>
+                  <field name="datetime_out"/>
+                  <field name="time_spent"/>
+                  <field name="state"/>
                 </tree>
             </field>
         </record>
@@ -62,6 +67,27 @@
                           </button>
                       </div> -->
                       <group>
+                          <group name="reference" string="Reference">
+                              <field name = "name" readonly="1"/>
+                              <field name = "sale_order_id" readonly="1"/>
+                              <field name = "sale_id" invisible = "1"/>
+                              <field name = "picking_id" attrs="{'invisible': [('sale_order_id', '=', False)]}"
+                                     domain="[('sale_id', '=', sale_id)]" context="{'default_sale_id': sale_id}"/>
+                              <field name = "purchase_order_id" readonly="1"/>
+                              <field name = "quality_check_id"/>
+                          </group>
+                          <group name="container_data" string="Container Data">
+                              <field name = "weight_before" readonly="1"/>
+                              <field name = "weight_after" readonly="1"/>
+                              <field name = "weight_total" readonly="1"/>
+                              <field name = "datetime_in" readonly="1"/>
+                              <field name = "datetime_out" readonly="1"/>
+                              <field name = "time_spent"  widget="float_time" readonly="1"/>
+<!--                               <field name = "description" readonly="1"/> -->
+                              <field name = "barcode" readonly="1"/>
+                          </group>
+                      </group>
+                      <group>
                           <group name="car_data" string="Car Data">
                               <field name = "barcode"/>
                               <field name = "product_id"/>
@@ -76,26 +102,6 @@
                           </group>
                           <group name="reference" string="Add Reference">
                               <field name = "remarks"/>
-                          </group>
-                      </group>
-                      <group>
-                          <group name="reference" string="Reference">
-                              <field name = "name" readonly="1"/>
-                              <field name = "sale_order_id" readonly="1"/>
-                              <field name = "sale_id" invisible = "1"/>
-                              <field name = "picking_id" attrs="{'invisible': [('sale_order_id', '=', False)]}"
-                                     domain="[('sale_id', '=', sale_id)]" context="{'default_sale_id': sale_id}"/>
-                              <field name = "purchase_order_id" readonly="1"/>
-                              <field name = "quality_check_id"/>
-                          </group>
-                          <group name="container_data" string="Container Data">
-                              <field name = "weight_before" readonly="1"/>
-                              <field name = "weight_after" readonly="1"/>
-                              <field name = "weight_total" readonly="1"/>
-                              <field name = "date_weight_line" readonly="1"/>
-                              <field name = "time_spent"  widget="float_time" readonly="1"/>
-                              <field name = "description" readonly="1"/>
-                              <field name = "barcode" readonly="1"/>
                           </group>
                       </group>
                   </sheet>

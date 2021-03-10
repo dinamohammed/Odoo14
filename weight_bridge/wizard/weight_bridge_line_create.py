@@ -41,10 +41,11 @@ class WeightBridgeCreateLine(models.TransientModel):
         
         return line_id.write({
             'date_weight_line': datetime.now(),
+            'datetime_out': datetime.now(),
             'description': self.description,
             'weight_total': difference,
             'weight_after': self.end_weight,
-            'time_spent': minutes_spent * 60 / 3600,
+#             'time_spent': minutes_spent * 60 / 3600,
         })
     
     
@@ -87,6 +88,7 @@ class WeightBridgeCreateLine2(models.TransientModel):
         values = {
 #             'order_id': self.order_id.id,
             'date_weight_line': datetime.now(),
+            'datetime_in': datetime.now(),
             'driver_id': self.driver_id.id,
             'product_id': self.product_id.id,
             'weight_before': self.start_weight,
