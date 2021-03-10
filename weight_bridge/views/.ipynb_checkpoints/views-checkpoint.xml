@@ -18,7 +18,7 @@
                   
                   <field name="datetime_in"/>
                   <field name="datetime_out"/>
-                  <field name="time_spent"/>
+                  <field name="time_spent" widget="float_time"/>
                   <field name="state"/>
                 </tree>
             </field>
