@@ -56,10 +56,10 @@ class WeightBridgeLine(models.Model):
     datetime_in = fields.Datetime('Date In')
     datetime_out = fields.Datetime('Date Out')
     
-    @api.onchange('datetime_in','datetime_out')
-    def get_timespent_value(self):
-        minutes_spent = (self.datetime_out - self.datetime_in).total_seconds() / 60
-        self.timespent = minutes_spent * 60 / 3600
+#     @api.onchange('datetime_in','datetime_out')
+#     def get_timespent_value(self):
+#         minutes_spent = (self.datetime_out - self.datetime_in).total_seconds() / 60
+#         self.timespent = minutes_spent * 60 / 3600
     
     @api.onchange('sale_order_id')
     def onchange_sale_order_id(self):

@@ -35,8 +35,7 @@ class WeightBridgeCreateLine(models.TransientModel):
             difference = end_weight - start_weight
         elif end_weight < start_weight:
             difference = start_weight - end_weight
-        start_time = line_id['weight_timer_start']
-        stop_time = self.weight_timer_stop
+        start_time = line_id['datetime_in']
         minutes_spent = (datetime.now() - start_time).total_seconds() / 60
         
         return line_id.write({
@@ -45,7 +44,7 @@ class WeightBridgeCreateLine(models.TransientModel):
             'description': self.description,
             'weight_total': difference,
             'weight_after': self.end_weight,
-#             'time_spent': minutes_spent * 60 / 3600,
+            'time_spent': minutes_spent * 60 / 3600,
         })
     
     
