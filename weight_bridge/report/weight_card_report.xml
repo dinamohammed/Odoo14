@@ -21,10 +21,10 @@
                                 </div>
                             </div>
                             <div class="row mt48 mb32">
-                                <div t-if="o.weightbridgeline_id.company_id" class="col-auto">
+                                <div t-if="o.weightbridgeline_id.company_id.partner_id" class="col-auto">
                                     <strong>Address:</strong>
                                     <t t-set="address">
-                                        <address t-field="o.weightbridgeline_id.company_id" 
+                                        <address t-field="o.weightbridgeline_id.company_id.partner_id" 
                                         t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}' />
                                     </t>
                                 </div>
